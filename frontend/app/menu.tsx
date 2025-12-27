@@ -15,8 +15,9 @@ const MENU_ITEMS = [
   { id: 3, title: '✅ Actions à Mener', route: '/actions', icon: '✅' },
   { id: 4, title: '🛡️ Mesures Opérationnelles', route: '/operations', icon: '🛡️' },
   { id: 5, title: '⚠️ Zones à Risques', route: '/risks', icon: '⚠️' },
-  { id: 6, title: '📝 SSO Scoring', route: '/sso', icon: '📝' },
-  { id: 7, title: '📑 Synthèse Finale', route: '/summary', icon: '📑' },
+  { id: 6, title: '🚧 Périmètres de Sécurité', route: '/perimeter', icon: '🚧' },
+  { id: 7, title: '📝 SSO Scoring', route: '/sso', icon: '📝' },
+  { id: 8, title: '📑 Synthèse Finale', route: '/summary', icon: '📑' },
 ];
 
 export default function Menu() {
