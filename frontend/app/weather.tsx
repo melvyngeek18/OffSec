@@ -232,60 +232,75 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
   },
-  placeholderCard: {
+  loadingCard: {
     backgroundColor: '#3a3450',
+    padding: 32,
+    borderRadius: 12,
+    marginBottom: 16,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#fff',
+    marginTop: 16,
+  },
+  errorCard: {
+    backgroundColor: '#dc2626',
     padding: 20,
     borderRadius: 12,
     marginBottom: 16,
-    borderWidth: 2,
-    borderColor: '#f59e0b',
   },
-  placeholderTitle: {
-    fontSize: 18,
+  errorText: {
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#f59e0b',
-    marginBottom: 12,
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 8,
   },
-  placeholderText: {
+  errorSubtext: {
     fontSize: 14,
     color: '#fff',
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  featureList: {
-    marginTop: 8,
-  },
-  featureItem: {
-    fontSize: 14,
-    color: '#9ca3af',
-    marginBottom: 4,
-  },
-  previewCard: {
-    backgroundColor: '#3a3450',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-  },
-  previewTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#9ca3af',
-    marginBottom: 16,
     textAlign: 'center',
   },
-  weatherInfo: {
+  retryButton: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  retryButtonText: {
+    color: '#dc2626',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  mainWeatherCard: {
+    backgroundColor: '#3a3450',
+    padding: 24,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  weatherDescription: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  mainWeatherInfo: {
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  weatherItem: {
+  mainWeatherItem: {
     alignItems: 'center',
   },
   weatherIcon: {
-    fontSize: 40,
-    marginBottom: 8,
+    fontSize: 48,
+    marginBottom: 12,
   },
-  weatherValue: {
-    fontSize: 24,
+  mainWeatherValue: {
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
@@ -294,11 +309,68 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9ca3af',
   },
+  feelsLike: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 4,
+  },
+  detailsCard: {
+    backgroundColor: '#3a3450',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  detailsTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 16,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  detailItem: {
+    alignItems: 'center',
+  },
+  detailIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginBottom: 4,
+  },
+  detailValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  alertCard: {
+    backgroundColor: '#f59e0b',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  alertIcon: {
+    fontSize: 32,
+    marginRight: 12,
+  },
+  alertText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+    flex: 1,
+  },
   nextButton: {
     backgroundColor: '#dc2626',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
+    marginTop: 8,
   },
   nextButtonText: {
     color: '#fff',
