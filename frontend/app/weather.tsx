@@ -87,40 +87,97 @@ export default function Weather() {
             <Text style={styles.addressText}>{data.adresse}</Text>
           )}
         </View>
-      ) : null}
-
-      <View style={styles.placeholderCard}>
-        <Text style={styles.placeholderTitle}>⚠️ Configuration requise</Text>
-        <Text style={styles.placeholderText}>
-          La clé API OpenWeatherMap n'est pas encore configurée.
-        </Text>
-        <Text style={styles.placeholderText}>
-          Cette page affichera:
-        </Text>
-        <View style={styles.featureList}>
-          <Text style={styles.featureItem}>• Température extérieure (°C)</Text>
-          <Text style={styles.featureItem}>• Vitesse du vent (km/h)</Text>
-          <Text style={styles.featureItem}>• Conditions météo générales</Text>
-          <Text style={styles.featureItem}>• Humidité et pression</Text>
+      ) : (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>⚠️ Position GPS non disponible</Text>
+          <Text style={styles.errorSubtext}>
+            Retournez à l'accueil pour obtenir votre position
+          </Text>
         </View>
-      </View>
+      )}
 
-      {/* Exemple de ce que la météo affichera */}
-      <View style={styles.previewCard}>
-        <Text style={styles.previewTitle}>Aperçu (données d'exemple)</Text>
-        <View style={styles.weatherInfo}>
-          <View style={styles.weatherItem}>
-            <Text style={styles.weatherIcon}>🌡️</Text>
-            <Text style={styles.weatherValue}>18°C</Text>
-            <Text style={styles.weatherLabel}>Température</Text>
-          </View>
-          <View style={styles.weatherItem}>
-            <Text style={styles.weatherIcon}>💨</Text>
-            <Text style={styles.weatherValue}>15 km/h</Text>
-            <Text style={styles.weatherLabel}>Vent</Text>
-          </View>
+      {loading && (
+        <View style={styles.loadingCard}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Récupération des données météo...</Text>
         </View>
-      </View>
+      )}
+
+      {error && !loading && (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>❌ {error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchWeather}>
+            <Text style={styles.retryButtonText}>🔄 Réessayer</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {weatherData && !loading && (
+        <>
+          <View style={styles.mainWeatherCard}>
+            <Text style={styles.weatherDescription}>
+              {weatherData.description.charAt(0).toUpperCase() + weatherData.description.slice(1)}
+            </Text>
+            <View style={styles.mainWeatherInfo}>
+              <View style={styles.mainWeatherItem}>
+                <Text style={styles.weatherIcon}>🌡️</Text>
+                <Text style={styles.mainWeatherValue}>{weatherData.temp}°C</Text>
+                <Text style={styles.weatherLabel}>Température</Text>
+                <Text style={styles.feelsLike}>Ressenti: {weatherData.feelsLike}°C</Text>
+              </View>
+              <View style={styles.mainWeatherItem}>
+                <Text style={styles.weatherIcon}>💨</Text>
+                <Text style={styles.mainWeatherValue}>{weatherData.windSpeed} km/h</Text>
+                <Text style={styles.weatherLabel}>Vent</Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.detailsCard}>
+            <Text style={styles.detailsTitle}>📊 Détails Supplémentaires</Text>
+            <View style={styles.detailRow}>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailIcon}>💧</Text>
+                <Text style={styles.detailLabel}>Humidité</Text>
+                <Text style={styles.detailValue}>{weatherData.humidity}%</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <Text style={styles.detailIcon}>🌡️</Text>
+                <Text style={styles.detailLabel}>Pression</Text>
+                <Text style={styles.detailValue}>{weatherData.pressure} hPa</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Alertes selon conditions */}
+          {weatherData.windSpeed > 50 && (
+            <View style={styles.alertCard}>
+              <Text style={styles.alertIcon}>⚠️</Text>
+              <Text style={styles.alertText}>
+                VENT FORT: Attention aux risques liés au vent ({weatherData.windSpeed} km/h)
+              </Text>
+            </View>
+          )}
+
+          {weatherData.temp < 5 && (
+            <View style={styles.alertCard}>
+              <Text style={styles.alertIcon}>❄️</Text>
+              <Text style={styles.alertText}>
+                FROID: Conditions de froid extrême ({weatherData.temp}°C)
+              </Text>
+            </View>
+          )}
+
+          {weatherData.temp > 30 && (
+            <View style={styles.alertCard}>
+              <Text style={styles.alertIcon}>🔥</Text>
+              <Text style={styles.alertText}>
+                CHALEUR: Conditions de chaleur extrême ({weatherData.temp}°C)
+              </Text>
+            </View>
+          )}
+        </>
+      )}
 
       <TouchableOpacity
         style={styles.nextButton}
