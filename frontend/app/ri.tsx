@@ -86,6 +86,21 @@ export default function RI() {
             onChangeText={(text) => setRiData({ ...riData, codis: text })}
             onBlur={handleSave}
           />
+          <Text style={styles.frequenceLabel}>Fréquence (3 chiffres):</Text>
+          <TextInput
+            style={styles.frequenceInputShort}
+            placeholder="Ex: 163"
+            placeholderTextColor="#9ca3af"
+            value={riData.codisFrequence}
+            onChangeText={(text) => {
+              if (text.length <= 3 && /^\d*$/.test(text)) {
+                setRiData({ ...riData, codisFrequence: text });
+              }
+            }}
+            onBlur={handleSave}
+            keyboardType="numeric"
+            maxLength={3}
+          />
         </View>
 
         {/* Niveau PRM */}
@@ -101,6 +116,21 @@ export default function RI() {
             value={riData.prm}
             onChangeText={(text) => setRiData({ ...riData, prm: text })}
             onBlur={handleSave}
+          />
+          <Text style={styles.frequenceLabel}>Fréquence (3 chiffres):</Text>
+          <TextInput
+            style={styles.frequenceInputShort}
+            placeholder="Ex: 164"
+            placeholderTextColor="#9ca3af"
+            value={riData.prmFrequence}
+            onChangeText={(text) => {
+              if (text.length <= 3 && /^\d*$/.test(text)) {
+                setRiData({ ...riData, prmFrequence: text });
+              }
+            }}
+            onBlur={handleSave}
+            keyboardType="numeric"
+            maxLength={3}
           />
         </View>
 
@@ -118,6 +148,21 @@ export default function RI() {
             onChangeText={(text) => setRiData({ ...riData, pcs: text })}
             onBlur={handleSave}
           />
+          <Text style={styles.frequenceLabel}>Fréquence (3 chiffres):</Text>
+          <TextInput
+            style={styles.frequenceInputShort}
+            placeholder="Ex: 165"
+            placeholderTextColor="#9ca3af"
+            value={riData.pcsFrequence}
+            onChangeText={(text) => {
+              if (text.length <= 3 && /^\d*$/.test(text)) {
+                setRiData({ ...riData, pcsFrequence: text });
+              }
+            }}
+            onBlur={handleSave}
+            keyboardType="numeric"
+            maxLength={3}
+          />
         </View>
 
         {/* COS */}
@@ -133,6 +178,21 @@ export default function RI() {
             value={riData.cos}
             onChangeText={(text) => setRiData({ ...riData, cos: text })}
             onBlur={handleSave}
+          />
+          <Text style={styles.frequenceLabel}>Fréquence (3 chiffres):</Text>
+          <TextInput
+            style={styles.frequenceInputShort}
+            placeholder="Ex: 166"
+            placeholderTextColor="#9ca3af"
+            value={riData.cosFrequence}
+            onChangeText={(text) => {
+              if (text.length <= 3 && /^\d*$/.test(text)) {
+                setRiData({ ...riData, cosFrequence: text });
+              }
+            }}
+            onBlur={handleSave}
+            keyboardType="numeric"
+            maxLength={3}
           />
         </View>
 
@@ -150,35 +210,21 @@ export default function RI() {
             onChangeText={(text) => setRiData({ ...riData, offSecu: text })}
             onBlur={handleSave}
           />
-        </View>
-
-        {/* Fréquences Radio */}
-        <View style={styles.frequenceCard}>
-          <Text style={styles.frequenceTitle}>📻 Fréquences Radio</Text>
-          
-          <View style={styles.frequenceRow}>
-            <Text style={styles.frequenceLabel}>Fréquence Tactique:</Text>
-            <TextInput
-              style={styles.frequenceInput}
-              placeholder="Ex: 163.7375 MHz"
-              placeholderTextColor="#9ca3af"
-              value={riData.frequenceTactique}
-              onChangeText={(text) => setRiData({ ...riData, frequenceTactique: text })}
-              onBlur={handleSave}
-            />
-          </View>
-
-          <View style={styles.frequenceRow}>
-            <Text style={styles.frequenceLabel}>Fréquence Opérationnelle:</Text>
-            <TextInput
-              style={styles.frequenceInput}
-              placeholder="Ex: 163.6625 MHz"
-              placeholderTextColor="#9ca3af"
-              value={riData.frequenceOperationnelle}
-              onChangeText={(text) => setRiData({ ...riData, frequenceOperationnelle: text })}
-              onBlur={handleSave}
-            />
-          </View>
+          <Text style={styles.frequenceLabel}>Fréquence (3 chiffres):</Text>
+          <TextInput
+            style={styles.frequenceInputShort}
+            placeholder="Ex: 167"
+            placeholderTextColor="#9ca3af"
+            value={riData.offSecuFrequence}
+            onChangeText={(text) => {
+              if (text.length <= 3 && /^\d*$/.test(text)) {
+                setRiData({ ...riData, offSecuFrequence: text });
+              }
+            }}
+            onBlur={handleSave}
+            keyboardType="numeric"
+            maxLength={3}
+          />
         </View>
 
         {/* Schéma hiérarchique */}
