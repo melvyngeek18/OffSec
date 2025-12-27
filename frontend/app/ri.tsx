@@ -36,15 +36,20 @@ export default function RI() {
   
   const [riData, setRiData] = useState<RIData>({
     codis: (data as any).riData?.codis || '',
-    codisFrequence: (data as any).riData?.codisFrequence || '',
+    codisFrequenceOps: (data as any).riData?.codisFrequenceOps || '',
+    codisFrequenceTact: (data as any).riData?.codisFrequenceTact || '',
     prm: (data as any).riData?.prm || '',
-    prmFrequence: (data as any).riData?.prmFrequence || '',
+    prmFrequenceOps: (data as any).riData?.prmFrequenceOps || '',
+    prmFrequenceTact: (data as any).riData?.prmFrequenceTact || '',
     pcs: (data as any).riData?.pcs || '',
-    pcsFrequence: (data as any).riData?.pcsFrequence || '',
+    pcsFrequenceOps: (data as any).riData?.pcsFrequenceOps || '',
+    pcsFrequenceTact: (data as any).riData?.pcsFrequenceTact || '',
     cos: (data as any).riData?.cos || '',
-    cosFrequence: (data as any).riData?.cosFrequence || '',
+    cosFrequenceOps: (data as any).riData?.cosFrequenceOps || '',
+    cosFrequenceTact: (data as any).riData?.cosFrequenceTact || '',
     offSecu: data.nom || '',
-    offSecuFrequence: (data as any).riData?.offSecuFrequence || '',
+    offSecuFrequenceOps: (data as any).riData?.offSecuFrequenceOps || '',
+    offSecuFrequenceTact: (data as any).riData?.offSecuFrequenceTact || '',
   });
 
   const handleSave = async () => {
