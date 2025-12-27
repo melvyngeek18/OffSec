@@ -41,38 +41,74 @@ export default function Home() {
   const getLocation = async () => {
     setLoading(true);
     try {
-      const hasPermission = await requestLocationPermission();
-      if (!hasPermission) {
-        setLoading(false);
-        return;
+      console.log('🎯 Démarrage géolocalisation...');
+      
+      // Stratégie 1: Essayer expo-location sur mobile
+      if (Platform.OS !== 'web') {
+        console.log('📱 Tentative GPS mobile (expo-location)...');
+        const hasPermission = await requestLocationPermission();
+        if (hasPermission) {
+          try {
+            const location = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.High,
+            });
+
+            setLatitude(location.coords.latitude);
+            setLongitude(location.coords.longitude);
+
+            // Reverse geocoding
+            const addresses = await Location.reverseGeocodeAsync({
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            });
+
+            if (addresses.length > 0) {
+              const addr = addresses[0];
+              const formattedAddress = `${addr.street || ''} ${addr.streetNumber || ''}, ${addr.city || ''}, ${addr.postalCode || ''}`;
+              setAdresse(formattedAddress);
+            }
+
+            Alert.alert('✅ Succès', 'Position GPS obtenue avec précision!');
+            setLoading(false);
+            return;
+          } catch (error) {
+            console.log('⚠️ GPS mobile échoué, tentative web...');
+          }
+        }
       }
 
-      const location = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
-
-      setLatitude(location.coords.latitude);
-      setLongitude(location.coords.longitude);
-
-      // Reverse geocoding pour obtenir l'adresse
-      const addresses = await Location.reverseGeocodeAsync({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-
-      if (addresses.length > 0) {
-        const addr = addresses[0];
-        const formattedAddress = `${addr.street || ''} ${addr.streetNumber || ''}, ${addr.city || ''}, ${addr.postalCode || ''}`;
-        setAdresse(formattedAddress);
+      // Stratégie 2: Utiliser le service multi-sources (web ou fallback)
+      console.log('🌐 Utilisation service multi-sources...');
+      const result = await getLocationMultiSource();
+      
+      if (result) {
+        setLatitude(result.latitude);
+        setLongitude(result.longitude);
+        setAdresse(result.address);
+        
+        if (result.city) {
+          Alert.alert(
+            '✅ Position Obtenue',
+            `Localisation: ${result.city}\n\n⚠️ Note: Précision approximative (ville/région). Pour plus de précision, utilisez l'app mobile.`,
+            [{ text: 'OK' }]
+          );
+        } else {
+          Alert.alert('✅ Succès', 'Position obtenue avec succès!');
+        }
+      } else {
+        Alert.alert(
+          '❌ Erreur',
+          'Impossible d\'obtenir votre position.\n\nSolutions:\n• Autorisez la géolocalisation dans votre navigateur\n• Utilisez l\'app mobile Expo Go\n• Ou saisissez l\'adresse manuellement',
+          [{ text: 'OK' }]
+        );
       }
-
-      Alert.alert('Succès', 'Localisation obtenue avec succès!');
     } catch (error: any) {
+      console.error('❌ Erreur géolocalisation:', error);
       Alert.alert(
-        'Erreur de localisation', 
-        'Impossible d\'obtenir la localisation. Sur navigateur web, assurez-vous d\'autoriser la géolocalisation. Pour une meilleure expérience, utilisez l\'app Expo Go sur mobile.'
+        '❌ Erreur de Localisation',
+        'Impossible d\'obtenir la localisation.\n\nVeuillez saisir l\'adresse manuellement ou utiliser le bouton de test.',
+        [{ text: 'OK' }]
       );
-      console.error('Location error:', error);
     } finally {
       setLoading(false);
     }
