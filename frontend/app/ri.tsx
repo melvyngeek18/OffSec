@@ -489,4 +489,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  frequenceLabel: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  frequenceInputShort: {
+    backgroundColor: '#262135',
+    color: '#fff',
+    padding: 10,
+    borderRadius: 8,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: '#4ade80',
+  },
 });
