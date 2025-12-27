@@ -205,8 +205,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#262135',
   },
+  scrollView: {
+    flex: 1,
+  },
   scrollContent: {
     padding: 20,
+    paddingBottom: 100,
   },
   header: {
     alignItems: 'center',
@@ -223,44 +227,173 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     textAlign: 'center',
   },
-  imageCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  riImage: {
-    width: '100%',
-    height: 300,
-  },
-  infoCard: {
+  descriptionCard: {
     backgroundColor: '#3a3450',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: '#d1d5db',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  formCard: {
+    backgroundColor: '#3a3450',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  levelCard: {
+    backgroundColor: '#4c1d95',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#8b5cf6',
+  },
+  offSecuCard: {
+    backgroundColor: '#dc2626',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f87171',
+  },
+  labelRow: {
+    marginBottom: 12,
+  },
+  levelHeader: {
+    marginBottom: 12,
+  },
+  offSecuHeader: {
+    marginBottom: 12,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  levelTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  offSecuTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  labelSubtitle: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  levelSubtitle: {
+    fontSize: 12,
+    color: '#c4b5fd',
+  },
+  offSecuSubtitle: {
+    fontSize: 12,
+    color: '#fca5a5',
+  },
+  input: {
+    backgroundColor: '#1f2937',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#fff',
+    borderWidth: 1,
+    borderColor: '#374151',
+  },
+  hierarchyCard: {
+    backgroundColor: '#1f2937',
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
   },
-  infoTitle: {
+  hierarchyTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  hierarchyFlow: {
+    alignItems: 'center',
+  },
+  hierarchyLevel: {
+    alignItems: 'center',
     marginBottom: 16,
   },
-  infoItem: {
+  hierarchyBranch: {
     flexDirection: 'row',
-    marginBottom: 12,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
-  infoBullet: {
-    fontSize: 16,
-    color: '#4ade80',
-    marginRight: 8,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#fff',
+  hierarchySide: {
     flex: 1,
+    alignItems: 'center',
+  },
+  hierarchyCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  hierarchyBox: {
+    backgroundColor: '#374151',
+    padding: 12,
+    borderRadius: 8,
+    minWidth: 80,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  offSecuBox: {
+    backgroundColor: '#dc2626',
+  },
+  hierarchyText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  hierarchyArrow: {
+    fontSize: 20,
+    color: '#9ca3af',
+    marginHorizontal: 8,
+  },
+  spacer: {
+    height: 20,
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#262135',
+    padding: 20,
+    flexDirection: 'row',
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#374151',
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: '#059669',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   nextButton: {
+    flex: 2,
     backgroundColor: '#dc2626',
     padding: 16,
     borderRadius: 8,
