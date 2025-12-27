@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -89,50 +89,116 @@ const OPERATIONS = [
 
 export default function Operations() {
   const router = useRouter();
-  const { data, updateOperations, saveIntervention } = useIntervention();
+  const { data, updateData, updateOperations, saveIntervention } = useIntervention();
 
-  const completedCount = Object.values(data.operations).filter(Boolean).length;
-  const progress = (completedCount / OPERATIONS.length) * 100;
+  // État pour les catégories activées
+  const [activeCategories, setActiveCategories] = useState<{ [key: string]: boolean }>(
+    (data as any).operationCategories || {
+      'Binômes': true,
+      'Phénomènes thermiques': true,
+      'Circulations': true,
+      'Déblai': true,
+      'Violences urbaines': true,
+      'Hauteur': true,
+      'Moteurs': true,
+      'Communication': true,
+      'Levage': true,
+      'Services ext': true,
+      'Radio': true,
+    }
+  );
+
+  const categories = Array.from(new Set(OPERATIONS.map(op => op.category)));
+
+  const toggleCategory = async (category: string) => {
+    const newActiveCategories = {
+      ...activeCategories,
+      [category]: !activeCategories[category],
+    };
+    setActiveCategories(newActiveCategories);
+    updateData('operationCategories', newActiveCategories);
+    await saveIntervention();
+  };
 
   const toggleOperation = async (opId: string) => {
     updateOperations(opId, !data.operations[opId]);
     await saveIntervention();
   };
 
-  // Grouper par catégorie
-  const categories = Array.from(new Set(OPERATIONS.map(op => op.category)));
+  // Calculer les mesures complétées seulement pour les catégories actives
+  const activeOperations = OPERATIONS.filter(op => activeCategories[op.category]);
+  const completedCount = activeOperations.filter(op => data.operations[op.id]).length;
+  const progress = activeOperations.length > 0 ? (completedCount / activeOperations.length) * 100 : 0;
 
   return (
     <View style={styles.container}>
       <View style={styles.progressContainer}>
         <Text style={styles.progressText}>
-          Progression: {completedCount}/{OPERATIONS.length} mesures
+          Progression: {completedCount}/{activeOperations.length} mesures
         </Text>
         <View style={styles.progressBar}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
+        <Text style={styles.progressSubtext}>
+          {categories.filter(cat => activeCategories[cat]).length}/{categories.length} catégories actives
+        </Text>
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         {categories.map(category => {
           const categoryOps = OPERATIONS.filter(op => op.category === category);
+          const isActive = activeCategories[category];
+          
           return (
             <View key={category} style={styles.categorySection}>
-              <Text style={styles.categoryTitle}>{category}</Text>
-              {categoryOps.map(op => (
-                <View key={op.id} style={styles.opCard}>
-                  <Text style={styles.opText}>{op.text}</Text>
-                  <Switch
-                    value={data.operations[op.id] || false}
-                    onValueChange={() => toggleOperation(op.id)}
-                    trackColor={{ false: '#4b5563', true: '#4ade80' }}
-                    thumbColor={data.operations[op.id] ? '#fff' : '#f3f4f6'}
-                  />
+              {/* En-tête de catégorie avec switch */}
+              <TouchableOpacity
+                style={[
+                  styles.categoryHeader,
+                  !isActive && styles.categoryHeaderInactive,
+                ]}
+                onPress={() => toggleCategory(category)}
+              >
+                <View style={styles.categoryTitleContainer}>
+                  <Text style={[
+                    styles.categoryTitle,
+                    !isActive && styles.categoryTitleInactive,
+                  ]}>
+                    {category}
+                  </Text>
+                  <Text style={styles.categoryCount}>
+                    {categoryOps.length} mesure{categoryOps.length > 1 ? 's' : ''}
+                  </Text>
                 </View>
-              ))}
+                <Switch
+                  value={isActive}
+                  onValueChange={() => toggleCategory(category)}
+                  trackColor={{ false: '#4b5563', true: '#4ade80' }}
+                  thumbColor={isActive ? '#fff' : '#f3f4f6'}
+                />
+              </TouchableOpacity>
+
+              {/* Liste des mesures si la catégorie est active */}
+              {isActive && (
+                <View style={styles.operationsContainer}>
+                  {categoryOps.map(op => (
+                    <View key={op.id} style={styles.opCard}>
+                      <Text style={styles.opText}>{op.text}</Text>
+                      <Switch
+                        value={data.operations[op.id] || false}
+                        onValueChange={() => toggleOperation(op.id)}
+                        trackColor={{ false: '#4b5563', true: '#4ade80' }}
+                        thumbColor={data.operations[op.id] ? '#fff' : '#f3f4f6'}
+                      />
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           );
         })}
+
+        <View style={styles.spacer} />
       </ScrollView>
 
       <View style={styles.footer}>
@@ -170,28 +236,62 @@ const styles = StyleSheet.create({
     backgroundColor: '#4b5563',
     borderRadius: 4,
     overflow: 'hidden',
+    marginBottom: 4,
   },
   progressFill: {
     height: '100%',
     backgroundColor: '#4ade80',
+  },
+  progressSubtext: {
+    fontSize: 12,
+    color: '#9ca3af',
+    textAlign: 'center',
+    marginTop: 4,
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
+    paddingBottom: 120,
   },
   categorySection: {
-    marginBottom: 24,
+    marginBottom: 16,
+  },
+  categoryHeader: {
+    backgroundColor: '#3a3450',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: '#4ade80',
+  },
+  categoryHeaderInactive: {
+    backgroundColor: '#2a2438',
+    borderColor: '#4b5563',
+  },
+  categoryTitleContainer: {
+    flex: 1,
+    marginRight: 12,
   },
   categoryTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#dc2626',
-    marginBottom: 12,
-    paddingBottom: 8,
-    borderBottomWidth: 2,
-    borderBottomColor: '#dc2626',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  categoryTitleInactive: {
+    color: '#6b7280',
+  },
+  categoryCount: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  operationsContainer: {
+    paddingLeft: 8,
   },
   opCard: {
     backgroundColor: '#3a3450',
@@ -208,8 +308,12 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
+  spacer: {
+    height: 20,
+  },
   footer: {
     padding: 16,
+    paddingBottom: 80,
     borderTopWidth: 1,
     borderTopColor: '#4b5563',
     backgroundColor: '#3a3450',
