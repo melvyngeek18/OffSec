@@ -15,6 +15,7 @@ import {
 import { useRouter } from 'expo-router';
 import * as Location from 'expo-location';
 import { useIntervention } from '../contexts/InterventionContext';
+import { getLocationMultiSource } from '../services/geolocation';
 
 export default function Home() {
   const router = useRouter();
