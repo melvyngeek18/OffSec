@@ -14,15 +14,20 @@ import { useIntervention } from '../contexts/InterventionContext';
 
 interface RIData {
   codis: string;
-  codisFrequence: string;
+  codisFrequenceOps: string;
+  codisFrequenceTact: string;
   prm: string;
-  prmFrequence: string;
+  prmFrequenceOps: string;
+  prmFrequenceTact: string;
   pcs: string;
-  pcsFrequence: string;
+  pcsFrequenceOps: string;
+  pcsFrequenceTact: string;
   cos: string;
-  cosFrequence: string;
+  cosFrequenceOps: string;
+  cosFrequenceTact: string;
   offSecu: string;
-  offSecuFrequence: string;
+  offSecuFrequenceOps: string;
+  offSecuFrequenceTact: string;
 }
 
 export default function RI() {
