@@ -44,6 +44,10 @@ export default function Weather() {
       );
 
       if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.cod === 401) {
+          throw new Error('Clé API invalide ou non activée. Veuillez vérifier votre clé OpenWeatherMap.');
+        }
         throw new Error('Erreur lors de la récupération des données météo');
       }
 
