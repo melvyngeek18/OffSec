@@ -18,6 +18,8 @@ interface RIData {
   pcs: string;
   cos: string;
   offSecu: string;
+  frequenceTactique: string;
+  frequenceOperationnelle: string;
 }
 
 export default function RI() {
