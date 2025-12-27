@@ -66,12 +66,23 @@ export default function Home() {
       }
 
       Alert.alert('Succès', 'Localisation obtenue avec succès!');
-    } catch (error) {
-      Alert.alert('Erreur', 'Impossible d\'obtenir la localisation.');
-      console.error(error);
+    } catch (error: any) {
+      Alert.alert(
+        'Erreur de localisation', 
+        'Impossible d\'obtenir la localisation. Sur navigateur web, assurez-vous d\'autoriser la géolocalisation. Pour une meilleure expérience, utilisez l\'app Expo Go sur mobile.'
+      );
+      console.error('Location error:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fonction de test pour développement (coordonnées de Paris)
+  const useTestLocation = () => {
+    setLatitude(48.8566);
+    setLongitude(2.3522);
+    setAdresse("Position de test: Paris, France");
+    Alert.alert('Position de test', 'Coordonnées de Paris définies pour test');
   };
 
   const handleSubmit = async () => {
