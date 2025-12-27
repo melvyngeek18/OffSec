@@ -14,6 +14,9 @@ export default function Layout() {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          contentStyle: {
+            backgroundColor: '#262135',
+          },
         }}
       >
         <Stack.Screen
