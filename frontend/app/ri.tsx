@@ -146,6 +146,35 @@ export default function RI() {
           />
         </View>
 
+        {/* Fréquences Radio */}
+        <View style={styles.frequenceCard}>
+          <Text style={styles.frequenceTitle}>📻 Fréquences Radio</Text>
+          
+          <View style={styles.frequenceRow}>
+            <Text style={styles.frequenceLabel}>Fréquence Tactique:</Text>
+            <TextInput
+              style={styles.frequenceInput}
+              placeholder="Ex: 163.7375 MHz"
+              placeholderTextColor="#9ca3af"
+              value={riData.frequenceTactique}
+              onChangeText={(text) => setRiData({ ...riData, frequenceTactique: text })}
+              onBlur={handleSave}
+            />
+          </View>
+
+          <View style={styles.frequenceRow}>
+            <Text style={styles.frequenceLabel}>Fréquence Opérationnelle:</Text>
+            <TextInput
+              style={styles.frequenceInput}
+              placeholder="Ex: 163.6625 MHz"
+              placeholderTextColor="#9ca3af"
+              value={riData.frequenceOperationnelle}
+              onChangeText={(text) => setRiData({ ...riData, frequenceOperationnelle: text })}
+              onBlur={handleSave}
+            />
+          </View>
+        </View>
+
         {/* Schéma hiérarchique */}
         <View style={styles.hierarchyCard}>
           <Text style={styles.hierarchyTitle}>🔼 Chaîne de Commandement</Text>
