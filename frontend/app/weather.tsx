@@ -6,22 +6,69 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
+
+const API_KEY = 'b61d4b3f6e0c1a1dd1e247fec24b1176';
+
+interface WeatherData {
+  temp: number;
+  windSpeed: number;
+  description: string;
+  humidity: number;
+  pressure: number;
+  feelsLike: number;
+}
 
 export default function Weather() {
   const router = useRouter();
   const { data } = useIntervention();
   const [loading, setLoading] = useState(false);
-  const [weatherData, setWeatherData] = useState<any>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Placeholder pour la météo - sera implémenté avec l'API OpenWeatherMap
+  const fetchWeather = async () => {
+    if (!data.latitude || !data.longitude) {
+      setError('Position GPS non disponible');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${data.latitude}&lon=${data.longitude}&appid=${API_KEY}&units=metric&lang=fr`
+      );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la récupération des données météo');
+      }
+
+      const json = await response.json();
+
+      setWeatherData({
+        temp: Math.round(json.main.temp),
+        windSpeed: Math.round(json.wind.speed * 3.6), // Conversion m/s vers km/h
+        description: json.weather[0].description,
+        humidity: json.main.humidity,
+        pressure: json.main.pressure,
+        feelsLike: Math.round(json.main.feels_like),
+      });
+    } catch (err) {
+      console.error('Erreur météo:', err);
+      setError('Impossible de récupérer les données météo');
+      Alert.alert('Erreur', 'Impossible de récupérer les données météo. Vérifiez votre connexion internet.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // TODO: Implémenter l'appel API avec OpenWeatherMap
-    // const API_KEY = 'VOTRE_CLE_API';
-    // fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data.latitude}&lon=${data.longitude}&appid=${API_KEY}&units=metric&lang=fr`)
-  }, []);
+    fetchWeather();
+  }, [data.latitude, data.longitude]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
