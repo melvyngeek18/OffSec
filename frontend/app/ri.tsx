@@ -30,6 +30,8 @@ export default function RI() {
     pcs: (data as any).riData?.pcs || '',
     cos: (data as any).riData?.cos || '',
     offSecu: data.nom || '',
+    frequenceTactique: (data as any).riData?.frequenceTactique || '',
+    frequenceOperationnelle: (data as any).riData?.frequenceOperationnelle || '',
   });
 
   const handleSave = async () => {
