@@ -610,6 +610,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 4,
   },
+  frequenceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 12,
+    gap: 12,
+  },
+  frequenceItem: {
+    flex: 1,
+  },
   frequenceInputShort: {
     backgroundColor: '#262135',
     color: '#fff',
