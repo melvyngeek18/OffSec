@@ -31,12 +31,15 @@ export default function RI() {
   
   const [riData, setRiData] = useState<RIData>({
     codis: (data as any).riData?.codis || '',
+    codisFrequence: (data as any).riData?.codisFrequence || '',
     prm: (data as any).riData?.prm || '',
+    prmFrequence: (data as any).riData?.prmFrequence || '',
     pcs: (data as any).riData?.pcs || '',
+    pcsFrequence: (data as any).riData?.pcsFrequence || '',
     cos: (data as any).riData?.cos || '',
+    cosFrequence: (data as any).riData?.cosFrequence || '',
     offSecu: data.nom || '',
-    frequenceTactique: (data as any).riData?.frequenceTactique || '',
-    frequenceOperationnelle: (data as any).riData?.frequenceOperationnelle || '',
+    offSecuFrequence: (data as any).riData?.offSecuFrequence || '',
   });
 
   const handleSave = async () => {
