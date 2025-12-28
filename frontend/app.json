@@ -2,6 +2,7 @@
   "expo": {
     "name": "OffSec",
     "slug": "offsec-app",
+    "scheme": "offsec",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
