@@ -1,13 +1,11 @@
 {
   "expo": {
-    "name": "OffSec - Officier Sécurité",
+    "name": "OffSec",
     "slug": "offsec-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "offsec",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
@@ -26,10 +24,8 @@
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "INTERNET"
-      ],
-      "edgeToEdgeEnabled": true
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -39,28 +35,14 @@
     "plugins": [
       "expo-router",
       [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#262135"
-        }
-      ],
-      [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Permet à OffSec d'utiliser votre localisation GPS pour les interventions."
+          "locationAlwaysAndWhenInUsePermission": "Allow OffSec to use your location for interventions."
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "eas": {
-        "projectId": "offsec-app"
-      }
     }
   }
 }
