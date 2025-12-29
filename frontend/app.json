@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/splash-image.png",
       "resizeMode": "contain",
@@ -39,6 +40,17 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow OffSec to use your location for interventions."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "newArchEnabled": false,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "minSdkVersion": 24
+          }
         }
       ]
     ],
