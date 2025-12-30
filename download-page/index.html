@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OffSec - Téléchargement Android</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #262135 0%, #3d3451 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            border-radius: 25px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 30px 0;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+            margin: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6);
+        }
+
+        .download-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        .download-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .info-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+
+        .info-item span {
+            margin-left: 8px;
+        }
+
+        .features {
+            text-align: left;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .features h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #dc2626;
+        }
+
+        .features ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 14px;
+            color: #d0d0d0;
+        }
+
+        .features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .install-instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .install-instructions h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #dc2626;
+        }
+
+        .install-instructions ol {
+            text-align: left;
+            padding-left: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .install-instructions li {
+            margin: 8px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .download-btn {
+                width: 100%;
+                display: block;
+            }
+        }
+
+        .expo-link {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 122, 255, 0.3);
+        }
+
+        .expo-link p {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #a0a0a0;
+        }
+
+        .expo-link a {
+            color: #007AFF;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .expo-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-icon">🚒</div>
+        
+        <h1>OffSec</h1>
+        <p class="subtitle">Officier de Sécurité - Application Mobile</p>
+        
+        <span class="version-badge">Version 1.0.0</span>
+
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+
+        <p style="color: #a0a0a0; font-size: 14px; margin-bottom: 20px;">
+            Scannez le QR Code pour télécharger l'APK
+        </p>
+
+        <a href="#" class="download-btn" id="download-apk">
+            📱 Télécharger l'APK Android
+        </a>
+
+        <div class="expo-link">
+            <p>🚀 <strong>Test rapide avec Expo Go</strong></p>
+            <p>Installez l'app <strong>Expo Go</strong> depuis le Play Store, puis scannez ce QR Code :</p>
+            <div id="expo-qrcode" style="margin: 15px 0;"></div>
+            <p style="font-size: 12px; margin-top: 10px;">
+                Ou copiez ce lien dans Expo Go : 
+                <br>
+                <a href="exp://[VOTRE-IP]:8081" id="expo-link" target="_blank">exp://[VOTRE-IP]:8081</a>
+            </p>
+        </div>
+
+        <div class="features">
+            <h3>✨ Fonctionnalités</h3>
+            <ul>
+                <li>Géolocalisation GPS automatique</li>
+                <li>Suivi des interventions opérationnelles</li>
+                <li>12 actions principales à valider</li>
+                <li>53 mesures opérationnelles</li>
+                <li>28 points de zones à risques</li>
+                <li>Calcul automatique du score SSO</li>
+                <li>Préconisations selon le niveau d'intervention</li>
+                <li>Synthèse complète de l'intervention</li>
+            </ul>
+        </div>
+
+        <div class="install-instructions">
+            <h3>📋 Instructions d'installation</h3>
+            <ol>
+                <li>Téléchargez le fichier APK en cliquant sur le bouton ci-dessus</li>
+                <li>Ouvrez les <strong>Paramètres</strong> de votre téléphone Android</li>
+                <li>Allez dans <strong>Sécurité</strong> → Activez <strong>"Sources inconnues"</strong></li>
+                <li>Ouvrez le fichier APK téléchargé</li>
+                <li>Cliquez sur <strong>Installer</strong></li>
+                <li>L'application sera disponible sur votre écran d'accueil</li>
+            </ol>
+        </div>
+
+        <div class="info-section">
+            <div class="info-item">
+                📦 <span>Taille: ~50 MB</span>
+            </div>
+            <div class="info-item">
+                🤖 <span>Android 6.0 ou supérieur</span>
+            </div>
+            <div class="info-item">
+                📍 <span>Permissions: GPS, Internet</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        // Get current page URL for QR code
+        const currentUrl = window.location.href;
+        const apkUrl = currentUrl.replace('index.html', 'offsec.apk');
+        
+        // Generate QR Code for APK download
+        new QRCode(document.getElementById("qrcode"), {
+            text: apkUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#262135",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Generate QR Code for Expo Go
+        const expoUrl = "exp://192.168.1.100:8081"; // À remplacer par votre IP
+        new QRCode(document.getElementById("expo-qrcode"), {
+            text: expoUrl,
+            width: 150,
+            height: 150,
+            colorDark: "#007AFF",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Update download button
+        document.getElementById('download-apk').href = apkUrl;
+        document.getElementById('expo-link').href = expoUrl;
+        document.getElementById('expo-link').textContent = expoUrl;
+
+        // Get IP address and update Expo link
+        async function updateExpoLink() {
+            try {
+                // Try to get local IP
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const ip = data.ip;
+                const newExpoUrl = `exp://${ip}:8081`;
+                
+                // Update the link (commented out as we need local network IP, not public IP)
+                // document.getElementById('expo-link').href = newExpoUrl;
+                // document.getElementById('expo-link').textContent = newExpoUrl;
+            } catch (error) {
+                console.log('Could not fetch IP address');
+            }
+        }
+
+        updateExpoLink();
+    </script>
+</body>
+</html>

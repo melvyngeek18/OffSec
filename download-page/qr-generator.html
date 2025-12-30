@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OffSec QR Code Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #262135;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+        #qrcode-container {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .qr-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .download-qr {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚒 Générateur de QR Code OffSec</h1>
+        
+        <div class="input-group">
+            <label for="apkUrl">URL de téléchargement de l'APK:</label>
+            <input 
+                type="text" 
+                id="apkUrl" 
+                placeholder="https://github.com/user/repo/releases/download/v1.0.0/offsec.apk"
+                value="https://3000-ibat6mq77imvnyikfdeqe-02b9cc79.sandbox.novita.ai"
+            >
+        </div>
+
+        <button onclick="generateQR()">Générer le QR Code</button>
+
+        <div id="qrcode-container">
+            <h2>QR Code Généré</h2>
+            <div id="qrcode"></div>
+            
+            <div class="qr-info">
+                <p><strong>URL:</strong> <span id="display-url"></span></p>
+                <p>Scannez ce QR Code pour télécharger l'application OffSec</p>
+            </div>
+
+            <div class="download-qr">
+                <button onclick="downloadQR()">📥 Télécharger le QR Code (PNG)</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        let qrcode = null;
+
+        function generateQR() {
+            const url = document.getElementById('apkUrl').value.trim();
+            
+            if (!url) {
+                alert('Veuillez entrer une URL valide');
+                return;
+            }
+
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+            
+            // Generate new QR code
+            qrcode = new QRCode(document.getElementById("qrcode"), {
+                text: url,
+                width: 300,
+                height: 300,
+                colorDark: "#262135",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Display info
+            document.getElementById('display-url').textContent = url;
+            document.getElementById('qrcode-container').style.display = 'block';
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) {
+                alert('Générez d\'abord un QR Code');
+                return;
+            }
+
+            // Convert canvas to blob and download
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'offsec-qrcode.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // Generate QR code on page load with default URL
+        window.onload = function() {
+            generateQR();
+        };
+    </script>
+</body>
+</html>
