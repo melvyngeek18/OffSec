@@ -146,6 +146,9 @@ export default function Operations() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {/* Section Photos en cours d'action */}
+        <PhotoCapture type="progress" title="Photos en cours d'action" />
+
         {categories.map(category => {
           const categoryOps = OPERATIONS.filter(op => op.category === category);
           const isActive = activeCategories[category];
