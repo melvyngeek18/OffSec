@@ -114,14 +114,6 @@ export default function Home() {
     }
   };
 
-  // Fonction de test pour développement (coordonnées de Paris)
-  const useTestLocation = () => {
-    setLatitude(48.8566);
-    setLongitude(2.3522);
-    setAdresse("Position de test: Paris, France");
-    Alert.alert('Position de test', 'Coordonnées de Paris définies pour test');
-  };
-
   const handleSubmit = async () => {
     if (!nom || !matricule || !numeroIntervention) {
       Alert.alert('Erreur', 'Veuillez remplir tous les champs obligatoires.');
