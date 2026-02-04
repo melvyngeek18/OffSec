@@ -42,6 +42,13 @@
         }
       ],
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "L'application accède à vos photos pour les ajouter aux rapports d'intervention.",
+          "cameraPermission": "L'application utilise la caméra pour prendre des photos de l'intervention."
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {
