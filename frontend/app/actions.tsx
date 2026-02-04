@@ -86,6 +86,9 @@ export default function Actions() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {/* Section Photos à l'arrivée */}
+        <PhotoCapture type="arrival" title="Photos à l'arrivée sur les lieux" />
+
         {ACTIONS.map((action, index) => (
           <View key={action.id} style={styles.actionCard}>
             <View style={styles.actionHeader}>
