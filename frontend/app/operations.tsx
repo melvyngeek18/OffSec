@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
+import PhotoCapture from '../components/PhotoCapture';
 
 const OPERATIONS = [
   // Contrôle de l'engagement des binômes
