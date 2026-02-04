@@ -204,13 +204,6 @@ export default function Home() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.testButton}
-            onPress={useTestLocation}
-          >
-            <Text style={styles.testButtonText}>🧪 Position de Test (Paris)</Text>
-          </TouchableOpacity>
-
           {latitude && longitude && (
             <View style={styles.coordsContainer}>
               <Text style={styles.coordsText}>GPS: {latitude.toFixed(6)}, {longitude.toFixed(6)}</Text>
