@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+interface PhotoData {
+  uri: string;
+  timestamp: string;
+  type: 'arrival' | 'progress' | 'end';
+  description?: string;
+}
+
 interface InterventionData {
   nom: string;
   matricule: string;
@@ -10,10 +17,33 @@ interface InterventionData {
   longitude: number | null;
   actions: { [key: string]: boolean };
   operations: { [key: string]: boolean };
+  operationCategories: { [key: string]: boolean };
   risks: { [key: string]: boolean };
   ssoScore: number;
   ssoLevel: string;
   ssoRecommendation: string;
+  riData: {
+    codis: string;
+    prm: string;
+    pcs: string;
+    cos: string;
+    offSecu: string;
+    codisOps: string;
+    codisTact: string;
+    prmOps: string;
+    prmTact: string;
+    pcsOps: string;
+    pcsTact: string;
+    cosOps: string;
+    cosTact: string;
+  };
+  photos: PhotoData[];
+  weatherData: {
+    temperature: number | null;
+    windSpeed: number | null;
+    description: string;
+  };
+  dateIntervention: string;
 }
 
 interface InterventionContextType {
@@ -22,6 +52,8 @@ interface InterventionContextType {
   updateActions: (key: string, value: boolean) => void;
   updateOperations: (key: string, value: boolean) => void;
   updateRisks: (key: string, value: boolean) => void;
+  addPhoto: (photo: PhotoData) => void;
+  removePhoto: (index: number) => void;
   saveIntervention: () => Promise<void>;
   loadIntervention: () => Promise<void>;
   resetIntervention: () => void;
@@ -36,10 +68,45 @@ const defaultData: InterventionData = {
   longitude: null,
   actions: {},
   operations: {},
+  operationCategories: {
+    'Binômes': true,
+    'Phénomènes thermiques': true,
+    'Circulations': true,
+    'Déblai': true,
+    'Violences urbaines': true,
+    'Hauteur': true,
+    'Moteurs': true,
+    'Communication': true,
+    'Levage': true,
+    'Services ext': true,
+    'Radio': true,
+  },
   risks: {},
   ssoScore: 0,
   ssoLevel: '',
   ssoRecommendation: '',
+  riData: {
+    codis: '',
+    prm: '',
+    pcs: '',
+    cos: '',
+    offSecu: '',
+    codisOps: '',
+    codisTact: '',
+    prmOps: '',
+    prmTact: '',
+    pcsOps: '',
+    pcsTact: '',
+    cosOps: '',
+    cosTact: '',
+  },
+  photos: [],
+  weatherData: {
+    temperature: null,
+    windSpeed: null,
+    description: '',
+  },
+  dateIntervention: '',
 };
 
 const InterventionContext = createContext<InterventionContextType | undefined>(undefined);
@@ -50,6 +117,16 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     loadIntervention();
   }, []);
+
+  // Sauvegarde automatique quand les données changent
+  useEffect(() => {
+    const saveTimeout = setTimeout(() => {
+      if (data.nom || data.matricule || data.numeroIntervention) {
+        saveIntervention();
+      }
+    }, 1000);
+    return () => clearTimeout(saveTimeout);
+  }, [data]);
 
   const updateData = (key: string, value: any) => {
     setData(prev => ({ ...prev, [key]: value }));
@@ -76,6 +153,20 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const addPhoto = (photo: PhotoData) => {
+    setData(prev => ({
+      ...prev,
+      photos: [...prev.photos, photo],
+    }));
+  };
+
+  const removePhoto = (index: number) => {
+    setData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index),
+    }));
+  };
+
   const saveIntervention = async () => {
     try {
       await AsyncStorage.setItem('currentIntervention', JSON.stringify(data));
@@ -89,7 +180,9 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
     try {
       const saved = await AsyncStorage.getItem('currentIntervention');
       if (saved) {
-        setData(JSON.parse(saved));
+        const parsedData = JSON.parse(saved);
+        // Fusionner avec les valeurs par défaut pour les nouvelles propriétés
+        setData({ ...defaultData, ...parsedData });
       }
     } catch (error) {
       console.error('Erreur de chargement:', error);
@@ -109,6 +202,8 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
         updateActions,
         updateOperations,
         updateRisks,
+        addPhoto,
+        removePhoto,
         saveIntervention,
         loadIntervention,
         resetIntervention,
