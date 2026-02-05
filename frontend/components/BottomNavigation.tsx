@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, BackHandler, Platform } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
 
@@ -17,7 +17,7 @@ const ROUTES = [
 export default function BottomNavigation() {
   const router = useRouter();
   const pathname = usePathname();
-  const { resetIntervention } = useIntervention();
+  const { saveIntervention, resetIntervention } = useIntervention();
 
   // Ne pas afficher sur la page d'accueil
   if (pathname === '/') {
@@ -44,21 +44,66 @@ export default function BottomNavigation() {
     router.push('/menu');
   };
 
+  const exitApp = () => {
+    if (Platform.OS === 'android') {
+      BackHandler.exitApp();
+    } else {
+      // Sur iOS, on ne peut pas fermer l'app programmatiquement
+      // On retourne à la page d'accueil
+      router.replace('/');
+    }
+  };
+
   const handleQuit = () => {
     Alert.alert(
-      'Quitter',
-      'Voulez-vous quitter l\'intervention en cours ?',
+      '🚪 Quitter l\'application',
+      'Voulez-vous sauvegarder les données de l\'intervention avant de quitter ?',
       [
-        { text: 'Annuler', style: 'cancel' },
         {
-          text: 'Quitter',
+          text: 'Annuler',
+          style: 'cancel',
+        },
+        {
+          text: '❌ Non',
           style: 'destructive',
-          onPress: () => {
+          onPress: async () => {
+            // Ne pas sauvegarder, réinitialiser et quitter
             resetIntervention();
-            router.replace('/');
+            Alert.alert(
+              'Données effacées',
+              'Les données n\'ont pas été sauvegardées.',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => exitApp(),
+                },
+              ]
+            );
           },
         },
-      ]
+        {
+          text: '✅ Oui',
+          onPress: async () => {
+            // Sauvegarder et quitter
+            try {
+              await saveIntervention();
+              Alert.alert(
+                '✅ Données sauvegardées',
+                'Vos données seront restaurées à la prochaine ouverture de l\'application.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => exitApp(),
+                  },
+                ]
+              );
+            } catch (error) {
+              Alert.alert('Erreur', 'Impossible de sauvegarder les données.');
+            }
+          },
+        },
+      ],
+      { cancelable: true }
     );
   };
 
