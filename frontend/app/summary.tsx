@@ -626,40 +626,11 @@ export default function Summary() {
     try {
       const html = await generatePdfHtml();
       
-      const { uri } = await Print.printToFileAsync({
+      // Ouvrir l'aperçu du PDF pour validation avec possibilité d'enregistrer/imprimer
+      await Print.printAsync({
         html,
-        base64: false,
       });
-
-      const fileName = `Rapport_Intervention_${data.numeroIntervention || 'rapport'}_${new Date().toISOString().split('T')[0]}.pdf`;
-      const newUri = `${FileSystem.documentDirectory}${fileName}`;
       
-      await FileSystem.moveAsync({
-        from: uri,
-        to: newUri,
-      });
-
-      Alert.alert(
-        '✅ PDF Généré avec succès',
-        `Le rapport complet a été créé:\n\n• Coordonnées intervention\n• Météo sur place\n• Risques identifiés\n• Actions entreprises\n• Photos (avant/pendant/après)\n\nVoulez-vous le partager ?`,
-        [
-          { text: 'Fermer', style: 'cancel' },
-          {
-            text: '📤 Partager',
-            onPress: async () => {
-              const isAvailable = await Sharing.isAvailableAsync();
-              if (isAvailable) {
-                await Sharing.shareAsync(newUri, {
-                  mimeType: 'application/pdf',
-                  dialogTitle: 'Partager le rapport d\'intervention',
-                });
-              } else {
-                Alert.alert('Info', `Le fichier a été enregistré:\n${newUri}`);
-              }
-            },
-          },
-        ]
-      );
     } catch (error) {
       console.error('Erreur génération PDF:', error);
       Alert.alert('Erreur', 'Impossible de générer le PDF. Veuillez réessayer.');
