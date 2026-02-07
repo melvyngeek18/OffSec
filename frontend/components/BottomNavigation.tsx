@@ -57,42 +57,20 @@ export default function BottomNavigation() {
   const handleQuit = () => {
     Alert.alert(
       '🚪 Quitter l\'application',
-      'Voulez-vous sauvegarder les données de l\'intervention avant de quitter ?',
+      'Voulez-vous sauvegarder les données de l\'intervention avant de quitter ?\n\n✅ OUI = Les données seront restaurées au prochain lancement\n❌ NON = Les données seront effacées définitivement',
       [
         {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: '❌ Non',
-          style: 'destructive',
-          onPress: async () => {
-            // Ne pas sauvegarder, réinitialiser et quitter
-            resetIntervention();
-            Alert.alert(
-              'Données effacées',
-              'Les données n\'ont pas été sauvegardées.',
-              [
-                {
-                  text: 'OK',
-                  onPress: () => exitApp(),
-                },
-              ]
-            );
-          },
-        },
-        {
-          text: '✅ Oui',
+          text: '✅ OUI - Sauvegarder',
           onPress: async () => {
             // Sauvegarder et quitter
             try {
               await saveIntervention();
               Alert.alert(
-                '✅ Données sauvegardées',
-                'Vos données seront restaurées à la prochaine ouverture de l\'application.',
+                '✅ Données Sauvegardées',
+                'Vos données d\'intervention ont été sauvegardées.\n\nElles seront automatiquement restaurées à la prochaine ouverture de l\'application.',
                 [
                   {
-                    text: 'OK',
+                    text: 'Quitter',
                     onPress: () => exitApp(),
                   },
                 ]
@@ -101,6 +79,28 @@ export default function BottomNavigation() {
               Alert.alert('Erreur', 'Impossible de sauvegarder les données.');
             }
           },
+        },
+        {
+          text: '❌ NON - Effacer',
+          style: 'destructive',
+          onPress: async () => {
+            // Ne pas sauvegarder, réinitialiser et quitter
+            resetIntervention();
+            Alert.alert(
+              '🗑️ Données Effacées',
+              'Les données de l\'intervention ont été supprimées.\n\nL\'application démarrera vierge au prochain lancement.',
+              [
+                {
+                  text: 'Quitter',
+                  onPress: () => exitApp(),
+                },
+              ]
+            );
+          },
+        },
+        {
+          text: 'Annuler',
+          style: 'cancel',
         },
       ],
       { cancelable: true }
