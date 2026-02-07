@@ -191,12 +191,6 @@ export default function RI() {
 
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleSave}
-        >
-          <Text style={styles.saveButtonText}>💾 Sauvegarder</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
           style={styles.nextButton}
           onPress={handleNext}
         >
