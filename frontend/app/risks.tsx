@@ -79,6 +79,9 @@ export default function Risks() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        {/* Section Photos des zones à risques */}
+        <PhotoCapture type="progress" title="Photos des zones à risques" />
+
         <View style={styles.warningCard}>
           <Text style={styles.warningTitle}>⚠️ Zones à Risques</Text>
           <Text style={styles.warningText}>
@@ -152,6 +155,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+    paddingBottom: 100,
   },
   warningCard: {
     backgroundColor: '#dc2626',
