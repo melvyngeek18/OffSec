@@ -95,17 +95,17 @@ export default function Operations() {
   // État pour les catégories activées
   const [activeCategories, setActiveCategories] = useState<{ [key: string]: boolean }>(
     (data as any).operationCategories || {
-      'Binômes': true,
-      'Phénomènes thermiques': true,
-      'Circulations': true,
-      'Déblai': true,
-      'Violences urbaines': true,
-      'Hauteur': true,
-      'Moteurs': true,
-      'Communication': true,
-      'Levage': true,
-      'Services ext': true,
-      'Radio': true,
+      'Binômes': false,
+      'Phénomènes thermiques': false,
+      'Circulations': false,
+      'Déblai': false,
+      'Violences urbaines': false,
+      'Hauteur': false,
+      'Moteurs': false,
+      'Communication': false,
+      'Levage': false,
+      'Services ext': false,
+      'Radio': false,
     }
   );
 
