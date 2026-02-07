@@ -624,31 +624,43 @@ export default function Summary() {
   const generatePdf = async () => {
     setGeneratingPdf(true);
     try {
+      console.log('Début génération PDF...');
       const html = await generatePdfHtml();
+      console.log('HTML généré, longueur:', html.length);
       
-      // Afficher directement l'aperçu d'impression (Print Dialog)
-      // L'utilisateur peut imprimer, sauvegarder en PDF ou partager depuis ce dialogue
-      await Print.printAsync({ html });
+      // Utiliser printToFileAsync pour créer le PDF
+      const { uri } = await Print.printToFileAsync({
+        html,
+        base64: false,
+      });
       
-      // Après la fermeture du dialogue d'impression, proposer de sauvegarder dans l'historique
-      Alert.alert(
-        '💾 Enregistrer le rapport ?',
-        'Voulez-vous également enregistrer ce rapport dans l\'historique OffSec ?',
-        [
-          {
-            text: 'Oui, enregistrer',
-            onPress: () => savePdfToHistory(html),
-          },
-          { text: 'Non merci', style: 'cancel' },
-        ]
-      );
+      console.log('PDF créé:', uri);
       
-    } catch (error) {
+      // Partager le PDF
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Rapport d\'intervention',
+        });
+      } else {
+        Alert.alert('PDF Généré', `Le rapport a été créé: ${uri}`);
+      }
+      
+    } catch (error: any) {
       console.error('Erreur génération PDF:', error);
-      Alert.alert('Erreur', 'Impossible de générer le PDF. Veuillez réessayer.');
+      Alert.alert(
+        'Erreur PDF',
+        `Impossible de générer le PDF: ${error.message || 'Erreur inconnue'}`
+      );
     } finally {
       setGeneratingPdf(false);
     }
+  };
+
+  const savePdfToHistory = async (html: string) => {
+    // Fonction conservée pour usage futur
+    console.log('savePdfToHistory appelé');
   };
 
   const savePdfToHistory = async (html: string) => {
