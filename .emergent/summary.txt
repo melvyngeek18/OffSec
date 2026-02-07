@@ -2,78 +2,122 @@
 <original_problem_statement>
 The user wants to create an Android application named OffSec for security officers, using Expo/React Native.
 
-**PRODUCT REQUIREMENTS:**
--   **Overall Style:** The background color for all pages should be , and text should be white.
--   **Screen 1: Home/Login Page**
-    -   Display an image and the text Officier Securite.
-    -   Input fields for: Name, Matricule (ID number), N° Intervention (Intervention number).
-    -   Geolocation capture: Should get the user's location as a local address and GPS coordinates (both automatic and manual input).
-    -   An Entrer (Enter) button to navigate to the other pages.
--   **Screen 2: Weather Page**
-    -   Display wind speed and outside temperature corresponding to the captured geolocation.
--   **Screen 3: RI Page (Operational Organization)**
-    -   Based on the fiche guide ops document, this page should be a form to fill in operational details.
-    -   Should include two 3-digit frequency fields, ops and tact, for each category (CODIS, PRM, etc.).
--   **Screen 4: Operational Measures Page**
-    -   Based on the mesures opérationnelles section of the guide.
-    -   Category titles (e.g., Binômes, Phénomènes thermiques) must be switchable. Sub-categories should only appear if the main category is switched on.
-    -   Items not selected should not appear in the final summary.
--   **Screen 5: Risk Zones Page**
-    -   Based on the zone à risques section of the guide, with switchable options.
--   **Screen 6: SSO Page (Health Support)**
-    -   Based on Annex 1 of the DO soutien opérationnel document.
-    -   Instead of text input, use selectable switches.
-    -   It should calculate a score and provide a final recommendation.
--   **Screen 7: Perimeter Page**
-    -   Based on the périmètre sécu.pdf document.
-    -   Users can select a type of perimeter, which then displays the corresponding numeric distance data.
--   **Screen 8: Final Summary Page**
-    -   A summary of actions that are yet to be completed, with the ability to switch them to done.
--   **Navigation:**
-    -   A main menu page with buttons to access each section.
-    -   A bottom navigation bar should be visible on all pages except the first (Home), containing Menu, Précédent (Previous), Suivant (Next), and Quitter (Quit) buttons.
--   **Data Storage:** All data should be stored locally on the device.
+**Initial High-Level Requirements:**
+- A multi-screen application with a specific dark theme ( background, white text).
+- Screens for Login, Weather, Operational Organization (RI), Operational Measures, Risk Zones, Health Support (SSO), Perimeter calculation, and a Final Summary.
+- Data persistence locally on the device.
+- Bottom navigation bar on all screens except the home page.
+- Geolocation capture and integration with a weather API.
+
+**Recent Feature Requests (from this session):**
+1.  **Data Persistence:** Data entered should be saved even if the app is closed and reappear on the next launch.
+2.  **Photo Capture:**
+    -   Add the ability to take/select photos on the Actions à mener page (arrival).
+    -   Add the ability to take/select photos on the Mesures opérationnelles page (in progress).
+    -   Add the ability to take/select photos on the Zone à risques page.
+    -   Add the ability to take/select photos at the beginning of the Synthèse finale page (end of action).
+3.  **PDF Synthesis:**
+    -   Add a Synthèse PDF button on the final summary page.
+    -   The PDF should include all intervention details: coordinates, weather, risks, actions (taken and remaining), operational measures, and all photos (before, during, after).
+    -   The PDF generation should first show a preview for user validation before saving/sharing.
+4.  **UI/UX Logic Changes:**
+    -   **Login Page ():** Remove the Position de test button.
+    -   **Organisation Opérationnelle ():** The OCT fields should only apply to COS and Officier Sécurité.
+    -   **Actions à mener ():** Checkboxes should be activated sequentially (the next one unlocks only after the previous one is checked). Photo capture should only become available after the 5th action is validated.
+    -   **Mesures opérationnelles ():** All categories should be unchecked/inactive by default.
+    -   **Bottom Navigation:** When clicking Quitter, a dialog should ask the user if they want to save the data. Yes saves and exits; No clears the data and exits.
 </original_problem_statement>
 
 **User's preferred language**: French
 
 **what currently exists?**
-A comprehensive Expo (React Native) application has been developed. The structure includes multiple screens managed by . Key features like the home page, weather screen, interactive forms for operational procedures (RI, SSO, Operations), and a security perimeter calculator are implemented. A hybrid geolocation service has been created for robust location tracking. Data persistence is handled via local storage (AsyncStorage). The UI includes a conditional bottom navigation bar and follows the user's specified color theme. The project is fully coded but is facing a build issue.
+The project is a nearly complete multi-screen Expo application. Most of the core features from the original problem statement were implemented in a previous session. In the current session, the agent's primary focus was to resolve a critical Android build failure. After numerous unsuccessful attempts, the agent pivoted to implementing a large batch of new features requested by the user.
+
+**New features coded (but untested):**
+-   Data persistence using AsyncStorage has been integrated into the .
+-   A reusable  component has been created.
+-   Photo capture functionality has been added to the , , , and  pages.
+-   PDF generation via  has been added to the summary page, including a preview functionality.
+-   The Quitter button now has a save/discard dialog.
+-   Several UI/UX logic changes have been implemented as per the user's latest requests.
+
+**CRITICAL STATE:** The application is in a **non-buildable state**. The original build issue was never resolved, and the addition of multiple new native modules (, , , etc.) has likely complicated the situation further.
 
 **Last working item**:
-    - Last item agent was working: The agent was actively diagnosing and attempting to fix a critical build failure reported by the user. The user is trying to build an Android APK locally but encounters a  error: . The agent correctly identified this as a configuration problem within the Expo project files and was in the process of correcting .
+    - Last item agent was working: The agent just finished implementing a large number of user-requested features and logic changes across multiple files, including adding photo capture, improving PDF synthesis, and modifying UI behavior on several screens. The final change was implementing a preview for the PDF generation in .
     - Status: IN PROGRESS
     - Agent Testing Done: N
-    - Which testing method agent to use? The agent must provide the user with corrected configuration files. The user will then need to run An Expo user account is required to proceed.
-
-Log in to EAS with email or username (exit and run eas login --help to see other login options)
-Input is required, but stdin is not readable. Failed to display prompt: Email or username on their local machine to test the fix. The agent should guide the user to run env: load .env
-env: export EXPO_TUNNEL_SUBDOMAIN EXPO_PACKAGER_HOSTNAME EXPO_PUBLIC_BACKEND_URL EXPO_USE_FAST_RESOLVER METRO_CACHE_ROOT
-› It's recommended to commit all changes before proceeding in case you want to revert generated changes.
-- Clearing android
-✔ Cleared android code
-- Creating native directory (./android)
-✔ Created native directory
-- Updating package.json
-- Updating package.json
-✔ Updated package.json
-- Running prebuild
-✖ Prebuild failed to get detailed error logs if the issue persists.
+    - Which testing method agent to use? The priority is to fix the build. Once the build is fixed, a **frontend testing agent** is required for a comprehensive test of all the newly added features (photo capture, PDF generation, sequential logic, quit dialog) as they are completely untested.
     - User Testing Done: N
 
 **All Pending/In progress Issue list**:
-  - Issue 1: Android APK build fails during the  phase (P0)
-  - Issue 2: The weather feature might be broken due to an incorrect API key (P2)
+  - Issue 1: Android APK build fails with a Kotlin compilation error (P0)
+  - Issue 2: Newly implemented features are completely untested and likely contain bugs (P1)
   
   Issues Detail:
   - Issue 1: 
-     - Attempted fixes: The agent previously modified  to include the  plugin (). This did not resolve the issue. The agent was inspecting  again when the last session ended.
+     - Attempted fixes: The agent has been struggling with this throughout the session. The error is  and .
+        -   **Attempt 1:** Corrected  splash image path and added a .
+        -   **Attempt 2:** Downgraded  and updated .
+        -   **Attempt 3:** Tried to resolve npm <command>
+
+Usage:
+
+npm install        install all the dependencies in your project
+npm install <foo>  add the <foo> dependency to your project
+npm test           run this project's tests
+npm run <foo>      run the script named <foo>
+npm <command> -h   quick help on <command>
+npm -l             display usage info for all commands
+npm help <term>    search for help on <term>
+npm help npm       more involved overview
+
+All commands:
+
+    access, adduser, audit, bugs, cache, ci, completion,
+    config, dedupe, deprecate, diff, dist-tag, docs, doctor,
+    edit, exec, explain, explore, find-dupes, fund, get, help,
+    help-search, hook, init, install, install-ci-test,
+    install-test, link, ll, login, logout, ls, org, outdated,
+    owner, pack, ping, pkg, prefix, profile, prune, publish,
+    query, rebuild, repo, restart, root, run-script, sbom,
+    search, set, shrinkwrap, star, stars, start, stop, team,
+    test, token, uninstall, unpublish, unstar, update, version,
+    view, whoami
+
+Specify configs in the ini-formatted file:
+    /root/.npmrc
+or on the command line via: npm <command> --key=value
+
+More configuration info: npm help config
+Configuration fields: npm help 7 config
+
+npm@10.8.2 /usr/lib/node_modules/npm vs yarn install v1.22.22
+info No lockfile found.
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+[4/4] Building fresh packages...
+success Saved lockfile.
+Done in 35.41s. conflicts for the user.
+        -   **Attempt 4:** Guided the user on how to fix  file extensions.
+        -   **Attempt 5:** Downgraded the entire project from Expo SDK 54/52 to **SDK 51** and adjusted all dependencies (, , , etc.) to match. This was the most significant and final attempt.
      - Next debug checklist: 
-        1.  Thoroughly review . Ensure the  name is a valid Java package name (e.g., ). Check for any syntax errors.
-        2.  Ensure the  array in  is correctly formatted.
-        3.  Verify that  is correctly configured.
-        4.  Review  for any script errors or dependency conflicts.
-        5.  Instruct the user to run env: load .env
+        1.  **STOP** trying to change dependencies randomly. The current  is based on **Expo SDK 51**. This should be the baseline.
+        2.  Thoroughly review the user's build logs. The error points to a problem with how the native Android project is generated by . It seems the generated  is for the New Architecture (Fabric) while the dependencies or project settings are for the Old Architecture.
+        3.  Verify that  in  is correctly configured to disable the new architecture. The agent tried adding  but the error persisted for the user.
+        4.  Instruct the user to perform a full clean build: , , 
+added 283 packages, removed 175 packages, changed 120 packages, and audited 1112 packages in 5s
+
+95 packages are looking for funding
+  run `npm fund` for details
+
+6 vulnerabilities (3 moderate, 3 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details., env: load .env
 env: export EXPO_TUNNEL_SUBDOMAIN EXPO_PACKAGER_HOSTNAME EXPO_PUBLIC_BACKEND_URL EXPO_USE_FAST_RESOLVER METRO_CACHE_ROOT
 › It's recommended to commit all changes before proceeding in case you want to revert generated changes.
 - Clearing android
@@ -84,150 +128,158 @@ env: export EXPO_TUNNEL_SUBDOMAIN EXPO_PACKAGER_HOSTNAME EXPO_PUBLIC_BACKEND_URL
 - Updating package.json
 ✔ Updated package.json | no changes
 - Running prebuild
-✖ Prebuild failed locally. This command clears the native project cache and provides more verbose error logs, which will be essential for debugging.
-     - Why fix this issue and what will be achieved with the fix? This is a critical blocker. The user cannot generate an APK to install and test the application on a physical Android device until this is resolved.
+✔ Finished prebuild, then .
+        5.  If it still fails, the problem lies in the user's EAS build environment or a deep incompatibility. The next step would be to create a minimal reproducible example with SDK 51 to isolate the issue.
+     - Why fix this issue and what will be achieved with the fix? **CRITICAL BLOCKER.** The user cannot create an APK to test the application. No further progress can be verified until this is solved.
      - Status:  IN PROGRESS
      - Is recurring issue? Y
-     - Should Test frontend/backend/both after fix? The user will test the build process on their local machine.
-     - Blocked on other issue: None
+     - Should Test frontend/backend/both after fix? The user will test the Android build.
+     - Blocked on other issue: None. This is the main blocker.
 
   - Issue 2: 
-     - Attempted fixes: None. The issue was introduced during debugging.
+     - Attempted fixes: None. The agent just finished writing the code.
      - Next debug checklist:
-        1.  Inspect the file .
-        2.  Confirm that the  variable is set to the user's provided key: .
-        3.  If it's set to a different test key, replace it with the user's key.
-     - Why fix this issue and what will be achieved with the fix? The weather feature will not work if the wrong API key is used. This ensures a core feature functions as requested.
+        1.  After the build is fixed, use the  to systematically test each new feature.
+        2.  Test camera and gallery permissions.
+        3.  Test photo capture and deletion on , , , and  pages.
+        4.  Verify data persistence for photos.
+        5.  Test the sequential enabling of checkboxes in .
+        6.  Test that categories in  are off by default.
+        7.  Test the PDF generation, preview, and final content (weather, risks, photos).
+        8.  Test the Quitter button dialog and its save/discard logic.
+     - Why fix this issue and what will be achieved with the fix? This will ensure the application functions as per the user's latest requests.
      - Status:  NOT STARTED
      - Is recurring issue? N
-     - Should Test frontend/backend/both after fix? Frontend. The agent can test the API call with  using the correct key to confirm it's active and valid.
-     - Blocked on other issue: None
+     - Should Test frontend/backend/both after fix? Frontend.
+     - Blocked on other issue: Issue 1: Android APK build failure.
 
 **In progress Task List**:
-  There are no in-progress tasks; the current focus is on resolving the critical build issue.
-
+- **Task 1: Resolve Android Build Failure (P0)**
+    - Where to resume: Review the final configuration with Expo SDK 51 and guide the user through a clean build process. The core of the problem () has not been solved.
+    - What will be achieved with this? A buildable APK, which unblocks all other testing and development.
+    - Status: IN PROGRESS
+    - Should Test frontend/backend/both after fix? User tests the build.
+    - Blocked on something: No.
+ 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **P1: Finalize 'Operational Measures' Logic:** Verify the implementation in  and  to ensure that categories deselected on the 'operations' page do not appear in the final summary.
-  - **P1: Finalize 'Summary' Page:** Ensure the  page correctly aggregates and displays all pending, switchable tasks from the 'Actions', 'Operations', and 'Risk Zones' pages.
+    - **P1: Full Test of Recently Added Features:** Once the build is fixed, a complete test of the photo capture, PDF generation, and new UI logic is required.
 - **Future Tasks:**
-  - **P2: Refine Bottom Navigation:** The Précédent (Previous) and Suivant (Next) buttons in  could be improved with a more robust, screen-order-aware navigation logic instead of just  and a fixed .
-  - **P2: Define Quitter Button Behavior:** The Quitter button in the bottom navigation bar currently has no defined action. Its functionality needs to be clarified with the user and implemented (e.g.,  on Android).
+    - **P2: Refine Bottom Navigation:** The  component uses a hardcoded array of routes for next/previous logic. This is brittle. A more robust solution using 's state would be better.
+    - **P2: Weather Data in PDF:** The agent updated the PDF to *include* a section for weather, but it's not clear if the weather data is being correctly fetched and passed from the  screen to the . This needs to be verified and possibly implemented.
 
 **Completed work in this session**
-- **Architecture & Scaffolding:**
-  - Built the entire multi-screen application structure using .
-  - Replaced the problematic  library with a pure  implementation to resolve critical errors.
-- **Feature Implementation:**
-  - Created all requested screens:  (Home), ,  (form), ,  (switchable categories), ,  (switches), , , and .
-  - Implemented a robust hybrid geolocation service in  that uses native GPS with an IP-based API fallback for reliability.
-  - Integrated the OpenWeatherMap API for real-time weather data in .
-  - Implemented a conditional bottom navigation bar in  that is hidden on the home screen.
-  - Converted static pages into interactive forms with  and  components, storing data locally with AsyncStorage.
-- **User Support & Documentation:**
-  - Provided extensive, detailed guides for the user on how to obtain API keys () and, critically, how to build the APK locally using EAS CLI (, , build scripts).
-  - Created several other markdown files to document progress and explain issues (, , etc.).
+- **Feature Implementation (Coded but Untested):**
+  - **Photo Capture:** Implemented photo taking/selection and display on , , , and  screens using  and . A new  component was created.
+  - **Data Persistence:** Implemented saving/loading of all intervention data (including photos) using AsyncStorage in .
+  - **PDF Generation & Preview:** Added a Synthèse PDF button on the  screen that generates a comprehensive report and shows a system preview using .
+  - **Quit Dialog:** Implemented a dialog on the Quitter button in  to save or discard data before exiting.
+  - **UI Logic Updates:**
+    - Modified  for OCT fields.
+    - Implemented sequential unlocking of actions in .
+    - Set  categories to be off by default.
+- **Build Issue Investigation:**
+  - Performed extensive debugging of the Android build failure.
+  - Systematically downgraded the project from Expo SDK 54 to SDK 51 and adjusted all related dependencies in  and .
+  - Identified the root cause as a likely conflict with React Native's New Architecture on the user's build environment.
 
 **Earlier issues found/mentioned but not fixed**
-None. The agent has been diligent in addressing all user-reported issues, with the  error being the only one currently outstanding.
+   - **Issue 1:** The primary Android build failure () remains unresolved despite multiple attempts. This issue has been present for most of the session and is a critical blocker.
 
 **Known issue recurrence from previous fork**
-  - N/A
+  - **Issue recurrence in previous fork:** Android APK build fails during the  or  phase.
+  - **Recurrence count:** High. This has been the central point of failure for the entire session.
+  - **Status:** IN PROGRESS
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Framework:** React Native with Expo
--   **Navigation:** Expo Router (file-based routing)
--   **State Management:** React Hooks (, , )
--   **Styling:** 
--   **Local Storage:** 
--   **Device APIs:**  for GPS
--   **Networking:**  for HTTP requests to third-party APIs
--   **Build Service:** Expo Application Services (EAS) for building the APK (user-side)
+-   **Framework:** React Native with Expo (downgraded to **SDK 51**)
+-   **Navigation:** Expo Router
+-   **State Management:** React Context ()
+-   **Local Storage:**  for full session persistence.
+-   **Native Features:**
+    -    for GPS.
+    -    for taking photos.
+    -    for selecting from gallery.
+    -    for PDF generation and preview.
+    -    and  for saving/sharing the PDF.
+-   **Build Service:** Expo Application Services (EAS) on the user's machine.
 
 **key DB schema**
--   N/A (The application uses local device storage via AsyncStorage, not a database).
+-   N/A (Uses AsyncStorage key-value store).
 
 **changes in tech stack**
--   The agent initially used  but removed it entirely in favor of a pure  solution to resolve persistent rendering and build issues.
+-   **Major Downgrade:** The project has been downgraded to **Expo SDK 51** and  to try and fix a persistent build error.
+-   **New Dependencies Added:** , , , , , .
 
 **All files of reference**
--   : Main app configuration. **Crucial for fixing the current build error.**
--   : Configuration for the EAS build service.
--   : Root layout file, controls navigation structure and the conditional bottom bar.
--   : Home screen, contains the primary geolocation logic.
--   : The custom service for fetching location data.
--   : One of the most complex forms, heavily modified throughout the session.
--   : Contains the logic for switchable categories.
--   : The guide provided to the user for building the APK.
+-   : **CRITICAL**. Defines all dependencies for Expo SDK 51. Must not be changed without understanding the impact on the build.
+-   : **CRITICAL**. Defines build properties (), SDK version, and native permissions.
+-   : Contains the complex PDF generation logic.
+-   : Contains the new sequential checkbox logic.
+-   : The core of the application's state and persistence logic.
+-   : New reusable component.
+-   : Contains the quit/save logic.
 
 **Areas that need refactoring**:
--   The state management is done entirely with  passed through props or managed within individual screens. For a more scalable application, implementing a state management library like Zustand or React Context for global state (e.g., user info, intervention data) would be beneficial.
--   The styling is functional but could be organized better. Common styles could be abstracted into a theme or constants file.
+- The constant downgrading and changing of dependencies has left the project in a fragile state. Once the build is stable, it would be wise to consider upgrading to a more recent (but stable) Expo SDK version in a systematic way.
+- The  previous/next logic is based on a hardcoded array, which is not ideal.
 
 **key api endpoints**
--   : For fetching weather data.
--   : Fallback API for IP-based geolocation.
--   : For reverse geocoding (lat/lon to address).
+-   
+-   
+-   
 
 **Critical Info for New Agent**
--   The user is performing the Android build on their own machine. Your role is to fix the project's configuration files so their local build succeeds. You cannot run the build yourself.
--   The primary blocker is the  error. Focus on fixing  and guiding the user.
--   The project was migrated away from  to solve earlier errors. Do not re-introduce it. Stick with .
--   The user's OpenWeatherMap API key might not be the one currently in the code. This needs to be checked and corrected.
+-   **DO NOT try to upgrade the Expo SDK.** The previous agent spent most of its time failing to fix build issues after upgrades/downgrades. The current configuration is **Expo SDK 51**. You must work within this constraint first.
+-   The primary task is to **get the Android build to succeed** on the user's machine. The error  is the key. This is a native Android build error, not a JavaScript one.
+-   The user is on **Windows**. Ensure any commands you provide are compatible with  or  (e.g., use  instead of ).
+-   A large number of features were just coded and are **completely untested**. Do not assume they work. After the build is fixed, they must be tested thoroughly.
 
 **documents created in this job**
--   
--   
--   
--   
--   
--   
--   
--   
+- /app/frontend/components/PhotoCapture.tsx
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **223:** reprend la resolution du probleme (resume solving the problem) - User is waiting for the fix for the build error. (Status: PENDING)
--   **220:** User provides the exact prebuild error message: . (Status: In Progress)
--   **217:** User reports the Android build failed with a  error. (Status: In Progress)
--   **215:** User asks for help finding the  folder path on their local machine. (Status: Completed)
--   **208:** User asks where to execute the An Expo user account is required to proceed.
-
-Log in to EAS with email or username (exit and run eas login --help to see other login options)
-Input is required, but stdin is not readable. Failed to display prompt: Email or username command. (Status: Completed)
--   **206:** User asks for a detailed explanation of the 
-changed 465 packages in 54s
-
-60 packages are looking for funding
-  run `npm fund` for details and Log in to EAS with email or username (exit and run eas login --help to see other login options)
-Input is required, but stdin is not readable. Failed to display prompt: Email or username commands. (Status: Completed)
--   **193:** User requests a downloadable  file. (Status: Completed, with a guide provided)
--   **176:** User reports that geolocation is still not working. (Status: Completed, new service was built)
--   **161:** User requests adding ops and tact frequency fields and asks for a guide on geolocation APIs. (Status: Completed)
--   **142:** User asks how to fix geolocation and weather problems. (Status: Completed)
+-   **192-200:** User requests multiple new features and logic changes. (Status: Implemented, not tested)
+-   **187:** User requests multiple complex feature changes across different pages. (Status: Implemented, not tested)
+-   **183:** User requests the PDF to open in a preview mode first. (Status: Implemented, not tested)
+-   **173:** User requests a save-on-quit dialog for the Quitter button. (Status: Implemented, not tested)
+-   **166:** User clarifies the required content for the PDF summary. (Status: Implemented, not tested)
+-   **162:** User confirms they want the agent to provide all updated file content. (Status: Completed)
+-   **156:** User confirms they want the agent to provide all updated file content. (Status: Completed)
+-   **122:** User requests a large batch of new features (remove test button, data persistence, photo capture, PDF synthesis). (Status: Implemented, not tested)
+-   **121:** Agent provides final files for the SDK 51 downgrade attempt and asks the user to test. (Status: Acknowledged, but the user immediately requested new features instead of testing the build).
+-   **102:** User reports the **same build failure** () even after the agent's proposed fix. (Status: **NOT RESOLVED**)
 
 **Project Health Check:**
--   **Broken:** The Android build process is broken due to a  configuration error.
--   **Mocked:** No mocked data; the app relies on live APIs and local storage.
+-   **Broken:** The Android build process is critically broken, preventing the user from creating an APK.
+-   **Mocked:** None.
 
 **3rd Party Integrations**
--   **OpenWeatherMap:** Used for real-time weather data. Requires a user-provided API key.
--   **ipapi.co:** Used as a fallback for IP-based geolocation. Public, no key required.
--   **OpenStreetMap (Nominatim):** Used for reverse geocoding. Public, no key required.
+-   **OpenWeatherMap:** Real-time weather data. (Requires user API key).
+-   **ipapi.co / OpenStreetMap:** Geolocation services. (Public).
+-   **Expo Native Modules:**
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
 
 **Testing status**
   - Testing agent used after significant changes: NO
   - Troubleshoot agent used after agent stuck in loop: NO
   - Test files created: None
-  - Known regressions: The weather feature might be non-functional if the agent left a test API key in the code.
+  - Known regressions: The entire application is non-buildable on the user's machine.
 
 **Credentials to test flow:**
--   **OpenWeatherMap API Key:**  (Must be verified to be present in ).
+-   N/A
 
 **What agent forgot to execute**
--   The agent forgot to restore the user's correct OpenWeatherMap API key in  after using a temporary one for debugging.
--   The agent did not explicitly confirm that the logic to hide unselected 'Operational Measures' from the final 'Summary' page was fully implemented and working.
+-   The agent never successfully resolved the user's core problem: the **Android build failure**. It got stuck, pivoted to feature development as requested by the user, and left the project in a non-buildable state.
+-   The agent did not perform **any** testing on the large number of complex features it implemented.
 
 </analysis>
