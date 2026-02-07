@@ -626,25 +626,20 @@ export default function Summary() {
     try {
       const html = await generatePdfHtml();
       
-      // 1. D'abord afficher l'aperçu pour validation
+      // Afficher directement l'aperçu d'impression (Print Dialog)
+      // L'utilisateur peut imprimer, sauvegarder en PDF ou partager depuis ce dialogue
+      await Print.printAsync({ html });
+      
+      // Après la fermeture du dialogue d'impression, proposer de sauvegarder dans l'historique
       Alert.alert(
-        '📄 Aperçu du Rapport',
-        'Voulez-vous visualiser l\'aperçu du rapport avant de l\'enregistrer ?',
+        '💾 Enregistrer le rapport ?',
+        'Voulez-vous également enregistrer ce rapport dans l\'historique OffSec ?',
         [
           {
-            text: 'Voir l\'aperçu',
-            onPress: async () => {
-              // Afficher l'aperçu d'impression
-              await Print.printAsync({ html });
-            },
+            text: 'Oui, enregistrer',
+            onPress: () => savePdfToHistory(html),
           },
-          {
-            text: 'Enregistrer directement',
-            onPress: async () => {
-              await savePdfToHistory(html);
-            },
-          },
-          { text: 'Annuler', style: 'cancel' },
+          { text: 'Non merci', style: 'cancel' },
         ]
       );
       
