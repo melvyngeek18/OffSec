@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -90,24 +90,22 @@ const OPERATIONS = [
 
 export default function Operations() {
   const router = useRouter();
-  const { data, updateData, updateOperations, saveIntervention } = useIntervention();
+  const { data, updateOperationCategories, updateOperations, saveIntervention } = useIntervention();
 
-  // État pour les catégories activées
-  const [activeCategories, setActiveCategories] = useState<{ [key: string]: boolean }>(
-    (data as any).operationCategories || {
-      'Binômes': false,
-      'Phénomènes thermiques': false,
-      'Circulations': false,
-      'Déblai': false,
-      'Violences urbaines': false,
-      'Hauteur': false,
-      'Moteurs': false,
-      'Communication': false,
-      'Levage': false,
-      'Services ext': false,
-      'Radio': false,
-    }
-  );
+  // Utiliser les catégories depuis le context ou initialiser à false
+  const activeCategories = data.operationCategories || {
+    'Binômes': false,
+    'Phénomènes thermiques': false,
+    'Circulations': false,
+    'Déblai': false,
+    'Violences urbaines': false,
+    'Hauteur': false,
+    'Moteurs': false,
+    'Communication': false,
+    'Levage': false,
+    'Services ext': false,
+    'Radio': false,
+  };
 
   const categories = Array.from(new Set(OPERATIONS.map(op => op.category)));
 
@@ -116,8 +114,7 @@ export default function Operations() {
       ...activeCategories,
       [category]: !activeCategories[category],
     };
-    setActiveCategories(newActiveCategories);
-    updateData('operationCategories', newActiveCategories);
+    updateOperationCategories(newActiveCategories);
     await saveIntervention();
   };
 
