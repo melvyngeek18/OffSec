@@ -663,68 +663,6 @@ export default function Summary() {
     console.log('savePdfToHistory appelé');
   };
 
-  const savePdfToHistory = async (html: string) => {
-    try {
-      // 1. Créer le dossier "historique OffSec" s'il n'existe pas
-      const historyDir = `${FileSystem.documentDirectory}historique_OffSec/`;
-      
-      const dirInfo = await FileSystem.getInfoAsync(historyDir);
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(historyDir, { intermediates: true });
-        console.log('Dossier historique créé:', historyDir);
-      }
-      
-      // 2. Générer le fichier PDF
-      const { uri: tempUri } = await Print.printToFileAsync({
-        html,
-        base64: false,
-      });
-      
-      // 3. Créer un nom de fichier avec la date et le numéro d'intervention
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const timeStr = new Date().toTimeString().slice(0, 5).replace(':', 'h');
-      const fileName = `Intervention_${data.numeroIntervention || 'NA'}_${dateStr}_${timeStr}.pdf`;
-      const finalPath = `${historyDir}${fileName}`;
-      
-      // 4. Copier le fichier dans le dossier historique
-      await FileSystem.copyAsync({
-        from: tempUri,
-        to: finalPath,
-      });
-      
-      console.log('PDF enregistré:', finalPath);
-      
-      // 5. Proposer de partager le fichier
-      Alert.alert(
-        '✅ Rapport Enregistré',
-        `Le rapport a été enregistré dans :\n📁 historique OffSec/${fileName}\n\nVoulez-vous le partager ?`,
-        [
-          {
-            text: 'Partager',
-            onPress: async () => {
-              const isAvailable = await Sharing.isAvailableAsync();
-              if (isAvailable) {
-                await Sharing.shareAsync(finalPath, {
-                  mimeType: 'application/pdf',
-                  dialogTitle: 'Partager le rapport',
-                  UTI: 'com.adobe.pdf',
-                });
-              }
-            },
-          },
-          { text: 'Fermer', style: 'cancel' },
-        ]
-      );
-      
-      // Supprimer le fichier temporaire
-      await FileSystem.deleteAsync(tempUri, { idempotent: true });
-      
-    } catch (error) {
-      console.error('Erreur enregistrement PDF:', error);
-      Alert.alert('Erreur', 'Impossible d\'enregistrer le PDF dans l\'historique.');
-    }
-  };
-
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
