@@ -626,10 +626,50 @@ export default function Summary() {
     try {
       const html = await generatePdfHtml();
       
-      // Ouvrir l'aperçu du PDF pour validation avec possibilité d'enregistrer/imprimer
-      await Print.printAsync({
+      // 1. Générer le fichier PDF
+      const { uri } = await Print.printToFileAsync({
         html,
+        base64: false,
       });
+      
+      console.log('PDF généré:', uri);
+      
+      // 2. Créer un nom de fichier avec la date et le numéro d'intervention
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const fileName = `Intervention_${data.numeroIntervention || 'NA'}_${dateStr}.pdf`;
+      
+      // 3. Vérifier si le partage est disponible
+      const isAvailable = await Sharing.isAvailableAsync();
+      
+      if (isAvailable) {
+        // 4. Ouvrir le dialogue de partage/enregistrement
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Enregistrer le rapport d\'intervention',
+          UTI: 'com.adobe.pdf',
+        });
+        
+        Alert.alert(
+          '✅ PDF Généré',
+          `Le rapport "${fileName}" a été créé avec succès.\n\nVous pouvez maintenant l'enregistrer ou le partager.`,
+          [{ text: 'OK' }]
+        );
+      } else {
+        // Si le partage n'est pas disponible, afficher l'aperçu d'impression
+        Alert.alert(
+          'PDF Généré',
+          'Le partage n\'est pas disponible sur cet appareil. Utilisez l\'aperçu d\'impression pour enregistrer le PDF.',
+          [
+            {
+              text: 'Voir l\'aperçu',
+              onPress: async () => {
+                await Print.printAsync({ html });
+              },
+            },
+            { text: 'Annuler', style: 'cancel' },
+          ]
+        );
+      }
       
     } catch (error) {
       console.error('Erreur génération PDF:', error);
