@@ -13,15 +13,6 @@ import { useRouter } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
 
 interface RIData {
-  codis: string;
-  codisFrequenceOps: string;
-  codisFrequenceTact: string;
-  prm: string;
-  prmFrequenceOps: string;
-  prmFrequenceTact: string;
-  pcs: string;
-  pcsFrequenceOps: string;
-  pcsFrequenceTact: string;
   cos: string;
   cosFrequenceOps: string;
   cosFrequenceTact: string;
@@ -35,15 +26,6 @@ export default function RI() {
   const { data, updateData, saveIntervention } = useIntervention();
   
   const [riData, setRiData] = useState<RIData>({
-    codis: (data as any).riData?.codis || '',
-    codisFrequenceOps: (data as any).riData?.codisFrequenceOps || '',
-    codisFrequenceTact: (data as any).riData?.codisFrequenceTact || '',
-    prm: (data as any).riData?.prm || '',
-    prmFrequenceOps: (data as any).riData?.prmFrequenceOps || '',
-    prmFrequenceTact: (data as any).riData?.prmFrequenceTact || '',
-    pcs: (data as any).riData?.pcs || '',
-    pcsFrequenceOps: (data as any).riData?.pcsFrequenceOps || '',
-    pcsFrequenceTact: (data as any).riData?.pcsFrequenceTact || '',
     cos: (data as any).riData?.cos || '',
     cosFrequenceOps: (data as any).riData?.cosFrequenceOps || '',
     cosFrequenceTact: (data as any).riData?.cosFrequenceTact || '',
@@ -73,175 +55,20 @@ export default function RI() {
       >
         <View style={styles.header}>
           <Text style={styles.title}>📊 Organisation Opérationnelle</Text>
-          <Text style={styles.subtitle}>Responsabilité d'Intervention (RI)</Text>
+          <Text style={styles.subtitle}>OCT - Ordre de Commandement Tactique</Text>
         </View>
 
         <View style={styles.descriptionCard}>
           <Text style={styles.descriptionText}>
-            Renseignez les informations de la chaîne de commandement pour cette intervention.
+            L'OCT ne concerne que le COS et l'Officier Sécurité.{'\n'}
+            Renseignez les informations de coordination tactique.
           </Text>
         </View>
 
-        {/* CODIS */}
-        <View style={styles.formCard}>
-          <View style={styles.labelRow}>
-            <Text style={styles.label}>CODIS</Text>
-            <Text style={styles.labelSubtitle}>Centre Opérationnel Départemental</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Nom/Référence CODIS"
-            placeholderTextColor="#9ca3af"
-            value={riData.codis}
-            onChangeText={(text) => setRiData({ ...riData, codis: text })}
-            onBlur={handleSave}
-          />
-          <View style={styles.frequenceRow}>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. OPS:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="163"
-                placeholderTextColor="#9ca3af"
-                value={riData.codisFrequenceOps}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, codisFrequenceOps: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. TACT:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="164"
-                placeholderTextColor="#9ca3af"
-                value={riData.codisFrequenceTact}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, codisFrequenceTact: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* Niveau PRM */}
-        <View style={styles.levelCard}>
-          <View style={styles.levelHeader}>
-            <Text style={styles.levelTitle}>Niveau PRM</Text>
-            <Text style={styles.levelSubtitle}>Premier Responsable de Mission</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Nom/Grade PRM"
-            placeholderTextColor="#9ca3af"
-            value={riData.prm}
-            onChangeText={(text) => setRiData({ ...riData, prm: text })}
-            onBlur={handleSave}
-          />
-          <View style={styles.frequenceRow}>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. OPS:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="165"
-                placeholderTextColor="#9ca3af"
-                value={riData.prmFrequenceOps}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, prmFrequenceOps: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. TACT:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="166"
-                placeholderTextColor="#9ca3af"
-                value={riData.prmFrequenceTact}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, prmFrequenceTact: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-          </View>
-        </View>
-
-        {/* PCS */}
-        <View style={styles.formCard}>
-          <View style={styles.labelRow}>
-            <Text style={styles.label}>PCS</Text>
-            <Text style={styles.labelSubtitle}>Poste de Commandement</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Responsable PCS"
-            placeholderTextColor="#9ca3af"
-            value={riData.pcs}
-            onChangeText={(text) => setRiData({ ...riData, pcs: text })}
-            onBlur={handleSave}
-          />
-          <View style={styles.frequenceRow}>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. OPS:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="167"
-                placeholderTextColor="#9ca3af"
-                value={riData.pcsFrequenceOps}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, pcsFrequenceOps: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-            <View style={styles.frequenceItem}>
-              <Text style={styles.frequenceLabel}>Fréq. TACT:</Text>
-              <TextInput
-                style={styles.frequenceInputShort}
-                placeholder="168"
-                placeholderTextColor="#9ca3af"
-                value={riData.pcsFrequenceTact}
-                onChangeText={(text) => {
-                  if (text.length <= 3 && /^\d*$/.test(text)) {
-                    setRiData({ ...riData, pcsFrequenceTact: text });
-                  }
-                }}
-                onBlur={handleSave}
-                keyboardType="numeric"
-                maxLength={3}
-              />
-            </View>
-          </View>
-        </View>
-
         {/* COS */}
-        <View style={styles.levelCard}>
+        <View style={styles.cosCard}>
           <View style={styles.levelHeader}>
-            <Text style={styles.levelTitle}>COS</Text>
+            <Text style={styles.levelTitle}>👨‍✈️ COS</Text>
             <Text style={styles.levelSubtitle}>Commandant des Opérations de Secours</Text>
           </View>
           <TextInput
@@ -257,7 +84,7 @@ export default function RI() {
               <Text style={styles.frequenceLabel}>Fréq. OPS:</Text>
               <TextInput
                 style={styles.frequenceInputShort}
-                placeholder="169"
+                placeholder="000"
                 placeholderTextColor="#9ca3af"
                 value={riData.cosFrequenceOps}
                 onChangeText={(text) => {
@@ -274,7 +101,7 @@ export default function RI() {
               <Text style={styles.frequenceLabel}>Fréq. TACT:</Text>
               <TextInput
                 style={styles.frequenceInputShort}
-                placeholder="170"
+                placeholder="000"
                 placeholderTextColor="#9ca3af"
                 value={riData.cosFrequenceTact}
                 onChangeText={(text) => {
@@ -293,7 +120,7 @@ export default function RI() {
         {/* OFF SECU */}
         <View style={styles.offSecuCard}>
           <View style={styles.offSecuHeader}>
-            <Text style={styles.offSecuTitle}>OFF SECU</Text>
+            <Text style={styles.offSecuTitle}>🛡️ OFF SECU</Text>
             <Text style={styles.offSecuSubtitle}>Officier Sécurité (Vous)</Text>
           </View>
           <TextInput
@@ -309,7 +136,7 @@ export default function RI() {
               <Text style={styles.frequenceLabel}>Fréq. OPS:</Text>
               <TextInput
                 style={styles.frequenceInputShort}
-                placeholder="171"
+                placeholder="000"
                 placeholderTextColor="#9ca3af"
                 value={riData.offSecuFrequenceOps}
                 onChangeText={(text) => {
@@ -326,7 +153,7 @@ export default function RI() {
               <Text style={styles.frequenceLabel}>Fréq. TACT:</Text>
               <TextInput
                 style={styles.frequenceInputShort}
-                placeholder="172"
+                placeholder="000"
                 placeholderTextColor="#9ca3af"
                 value={riData.offSecuFrequenceTact}
                 onChangeText={(text) => {
@@ -344,39 +171,19 @@ export default function RI() {
 
         {/* Schéma hiérarchique */}
         <View style={styles.hierarchyCard}>
-          <Text style={styles.hierarchyTitle}>🔼 Chaîne de Commandement</Text>
+          <Text style={styles.hierarchyTitle}>🔗 Liaison OCT</Text>
           <View style={styles.hierarchyFlow}>
-            <View style={styles.hierarchyLevel}>
-              <View style={styles.hierarchyBox}>
-                <Text style={styles.hierarchyText}>CODIS</Text>
-              </View>
-              <Text style={styles.hierarchyArrow}>↓</Text>
+            <View style={styles.hierarchyBox}>
+              <Text style={styles.hierarchyText}>COS</Text>
             </View>
-            
-            <View style={styles.hierarchyBranch}>
-              <View style={styles.hierarchySide}>
-                <View style={styles.hierarchyBox}>
-                  <Text style={styles.hierarchyText}>PRM</Text>
-                </View>
-              </View>
-              <Text style={styles.hierarchyArrow}>↔</Text>
-              <View style={styles.hierarchyCenter}>
-                <View style={styles.hierarchyBox}>
-                  <Text style={styles.hierarchyText}>PCS</Text>
-                </View>
-                <Text style={styles.hierarchyArrow}>↓</Text>
-                <View style={styles.hierarchyBox}>
-                  <Text style={styles.hierarchyText}>COS</Text>
-                </View>
-              </View>
-              <Text style={styles.hierarchyArrow}>↔</Text>
-              <View style={styles.hierarchySide}>
-                <View style={[styles.hierarchyBox, styles.offSecuBox]}>
-                  <Text style={styles.hierarchyText}>OFF SECU</Text>
-                </View>
-              </View>
+            <Text style={styles.hierarchyArrow}>↔️</Text>
+            <View style={[styles.hierarchyBox, styles.offSecuBox]}>
+              <Text style={styles.hierarchyText}>OFF SECU</Text>
             </View>
           </View>
+          <Text style={styles.hierarchyNote}>
+            Communication directe COS ↔ Officier Sécurité
+          </Text>
         </View>
 
         <View style={styles.spacer} />
@@ -410,7 +217,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 120,
   },
   header: {
     alignItems: 'center',
@@ -432,20 +239,16 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
   },
   descriptionText: {
     fontSize: 14,
     color: '#d1d5db',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
   },
-  formCard: {
-    backgroundColor: '#3a3450',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 16,
-  },
-  levelCard: {
+  cosCard: {
     backgroundColor: '#4c1d95',
     padding: 20,
     borderRadius: 12,
@@ -461,36 +264,23 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: '#f87171',
   },
-  labelRow: {
-    marginBottom: 12,
-  },
   levelHeader: {
     marginBottom: 12,
   },
   offSecuHeader: {
     marginBottom: 12,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
   levelTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
   },
   offSecuTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 4,
-  },
-  labelSubtitle: {
-    fontSize: 12,
-    color: '#9ca3af',
   },
   levelSubtitle: {
     fontSize: 12,
@@ -514,6 +304,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
+    alignItems: 'center',
   },
   hierarchyTitle: {
     fontSize: 18,
@@ -523,54 +314,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   hierarchyFlow: {
-    alignItems: 'center',
-  },
-  hierarchyLevel: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  hierarchyBranch: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  hierarchySide: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  hierarchyCenter: {
-    flex: 1,
-    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
   },
   hierarchyBox: {
-    backgroundColor: '#374151',
-    padding: 12,
-    borderRadius: 8,
-    minWidth: 80,
+    backgroundColor: '#4c1d95',
+    padding: 16,
+    borderRadius: 12,
+    minWidth: 100,
     alignItems: 'center',
-    marginBottom: 8,
   },
   offSecuBox: {
     backgroundColor: '#dc2626',
   },
   hierarchyText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
   },
   hierarchyArrow: {
-    fontSize: 20,
+    fontSize: 24,
+    color: '#4ade80',
+    marginHorizontal: 16,
+  },
+  hierarchyNote: {
+    fontSize: 12,
     color: '#9ca3af',
-    marginHorizontal: 8,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   spacer: {
     height: 20,
   },
   footer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 60,
     left: 0,
     right: 0,
     backgroundColor: '#262135',
