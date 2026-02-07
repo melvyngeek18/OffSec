@@ -626,56 +626,95 @@ export default function Summary() {
     try {
       const html = await generatePdfHtml();
       
-      // 1. Générer le fichier PDF
-      const { uri } = await Print.printToFileAsync({
-        html,
-        base64: false,
-      });
-      
-      console.log('PDF généré:', uri);
-      
-      // 2. Créer un nom de fichier avec la date et le numéro d'intervention
-      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-      const fileName = `Intervention_${data.numeroIntervention || 'NA'}_${dateStr}.pdf`;
-      
-      // 3. Vérifier si le partage est disponible
-      const isAvailable = await Sharing.isAvailableAsync();
-      
-      if (isAvailable) {
-        // 4. Ouvrir le dialogue de partage/enregistrement
-        await Sharing.shareAsync(uri, {
-          mimeType: 'application/pdf',
-          dialogTitle: 'Enregistrer le rapport d\'intervention',
-          UTI: 'com.adobe.pdf',
-        });
-        
-        Alert.alert(
-          '✅ PDF Généré',
-          `Le rapport "${fileName}" a été créé avec succès.\n\nVous pouvez maintenant l'enregistrer ou le partager.`,
-          [{ text: 'OK' }]
-        );
-      } else {
-        // Si le partage n'est pas disponible, afficher l'aperçu d'impression
-        Alert.alert(
-          'PDF Généré',
-          'Le partage n\'est pas disponible sur cet appareil. Utilisez l\'aperçu d\'impression pour enregistrer le PDF.',
-          [
-            {
-              text: 'Voir l\'aperçu',
-              onPress: async () => {
-                await Print.printAsync({ html });
-              },
+      // 1. D'abord afficher l'aperçu pour validation
+      Alert.alert(
+        '📄 Aperçu du Rapport',
+        'Voulez-vous visualiser l\'aperçu du rapport avant de l\'enregistrer ?',
+        [
+          {
+            text: 'Voir l\'aperçu',
+            onPress: async () => {
+              // Afficher l'aperçu d'impression
+              await Print.printAsync({ html });
             },
-            { text: 'Annuler', style: 'cancel' },
-          ]
-        );
-      }
+          },
+          {
+            text: 'Enregistrer directement',
+            onPress: async () => {
+              await savePdfToHistory(html);
+            },
+          },
+          { text: 'Annuler', style: 'cancel' },
+        ]
+      );
       
     } catch (error) {
       console.error('Erreur génération PDF:', error);
       Alert.alert('Erreur', 'Impossible de générer le PDF. Veuillez réessayer.');
     } finally {
       setGeneratingPdf(false);
+    }
+  };
+
+  const savePdfToHistory = async (html: string) => {
+    try {
+      // 1. Créer le dossier "historique OffSec" s'il n'existe pas
+      const historyDir = `${FileSystem.documentDirectory}historique_OffSec/`;
+      
+      const dirInfo = await FileSystem.getInfoAsync(historyDir);
+      if (!dirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(historyDir, { intermediates: true });
+        console.log('Dossier historique créé:', historyDir);
+      }
+      
+      // 2. Générer le fichier PDF
+      const { uri: tempUri } = await Print.printToFileAsync({
+        html,
+        base64: false,
+      });
+      
+      // 3. Créer un nom de fichier avec la date et le numéro d'intervention
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const timeStr = new Date().toTimeString().slice(0, 5).replace(':', 'h');
+      const fileName = `Intervention_${data.numeroIntervention || 'NA'}_${dateStr}_${timeStr}.pdf`;
+      const finalPath = `${historyDir}${fileName}`;
+      
+      // 4. Copier le fichier dans le dossier historique
+      await FileSystem.copyAsync({
+        from: tempUri,
+        to: finalPath,
+      });
+      
+      console.log('PDF enregistré:', finalPath);
+      
+      // 5. Proposer de partager le fichier
+      Alert.alert(
+        '✅ Rapport Enregistré',
+        `Le rapport a été enregistré dans :\n📁 historique OffSec/${fileName}\n\nVoulez-vous le partager ?`,
+        [
+          {
+            text: 'Partager',
+            onPress: async () => {
+              const isAvailable = await Sharing.isAvailableAsync();
+              if (isAvailable) {
+                await Sharing.shareAsync(finalPath, {
+                  mimeType: 'application/pdf',
+                  dialogTitle: 'Partager le rapport',
+                  UTI: 'com.adobe.pdf',
+                });
+              }
+            },
+          },
+          { text: 'Fermer', style: 'cancel' },
+        ]
+      );
+      
+      // Supprimer le fichier temporaire
+      await FileSystem.deleteAsync(tempUri, { idempotent: true });
+      
+    } catch (error) {
+      console.error('Erreur enregistrement PDF:', error);
+      Alert.alert('Erreur', 'Impossible d\'enregistrer le PDF dans l\'historique.');
     }
   };
 
