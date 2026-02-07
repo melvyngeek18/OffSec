@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -69,7 +69,24 @@ export default function Actions() {
   const completedCount = Object.values(data.actions).filter(Boolean).length;
   const progress = (completedCount / ACTIONS.length) * 100;
 
-  const toggleAction = async (actionId: string) => {
+  // Fonction pour vérifier si une action est débloquée
+  const isActionUnlocked = (index: number): boolean => {
+    if (index === 0) return true; // La première est toujours active
+    
+    // Vérifier si l'action précédente est validée
+    const previousActionId = ACTIONS[index - 1].id;
+    return data.actions[previousActionId] === true;
+  };
+
+  // Fonction pour vérifier si les photos sont débloquées (après action 5)
+  const isPhotoUnlocked = (): boolean => {
+    return data.actions['action5'] === true;
+  };
+
+  const toggleAction = async (actionId: string, index: number) => {
+    // Vérifier si l'action est débloquée
+    if (!isActionUnlocked(index)) return;
+    
     updateActions(actionId, !data.actions[actionId]);
     await saveIntervention();
   };
@@ -86,27 +103,73 @@ export default function Actions() {
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Section Photos à l'arrivée */}
-        <PhotoCapture type="arrival" title="Photos à l'arrivée sur les lieux" />
-
-        {ACTIONS.map((action, index) => (
-          <View key={action.id} style={styles.actionCard}>
-            <View style={styles.actionHeader}>
-              <View style={styles.numberBadge}>
-                <Text style={styles.numberText}>{index + 1}</Text>
-              </View>
-              <View style={styles.actionTextContainer}>
-                <Text style={styles.actionText}>{action.text}</Text>
-              </View>
-              <Switch
-                value={data.actions[action.id] || false}
-                onValueChange={() => toggleAction(action.id)}
-                trackColor={{ false: '#4b5563', true: '#4ade80' }}
-                thumbColor={data.actions[action.id] ? '#fff' : '#f3f4f6'}
-              />
-            </View>
+        {/* Section Photos à l'arrivée - débloquée après action 5 */}
+        {isPhotoUnlocked() ? (
+          <PhotoCapture type="arrival" title="Photos à l'arrivée sur les lieux" />
+        ) : (
+          <View style={styles.photoLockedCard}>
+            <Text style={styles.photoLockedIcon}>🔒</Text>
+            <Text style={styles.photoLockedTitle}>Photos verrouillées</Text>
+            <Text style={styles.photoLockedText}>
+              Validez l'action 5 (Reconnaissance cubique) pour pouvoir prendre des photos
+            </Text>
           </View>
-        ))}
+        )}
+
+        {ACTIONS.map((action, index) => {
+          const isUnlocked = isActionUnlocked(index);
+          const isCompleted = data.actions[action.id] || false;
+          
+          return (
+            <View 
+              key={action.id} 
+              style={[
+                styles.actionCard,
+                !isUnlocked && styles.actionCardLocked,
+                isCompleted && styles.actionCardCompleted,
+              ]}
+            >
+              <View style={styles.actionHeader}>
+                <View style={[
+                  styles.numberBadge,
+                  !isUnlocked && styles.numberBadgeLocked,
+                  isCompleted && styles.numberBadgeCompleted,
+                ]}>
+                  {isCompleted ? (
+                    <Text style={styles.checkIcon}>✓</Text>
+                  ) : !isUnlocked ? (
+                    <Text style={styles.lockIcon}>🔒</Text>
+                  ) : (
+                    <Text style={styles.numberText}>{index + 1}</Text>
+                  )}
+                </View>
+                <View style={styles.actionTextContainer}>
+                  <Text style={[
+                    styles.actionText,
+                    !isUnlocked && styles.actionTextLocked,
+                    isCompleted && styles.actionTextCompleted,
+                  ]}>
+                    {action.text}
+                  </Text>
+                  {!isUnlocked && (
+                    <Text style={styles.unlockHint}>
+                      Validez l'action {index} pour débloquer
+                    </Text>
+                  )}
+                </View>
+                <Switch
+                  value={isCompleted}
+                  onValueChange={() => toggleAction(action.id, index)}
+                  trackColor={{ false: '#4b5563', true: '#4ade80' }}
+                  thumbColor={isCompleted ? '#fff' : '#f3f4f6'}
+                  disabled={!isUnlocked}
+                />
+              </View>
+            </View>
+          );
+        })}
+
+        <View style={styles.spacer} />
       </ScrollView>
 
       <View style={styles.footer}>
@@ -154,29 +217,80 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
+    paddingBottom: 120,
+  },
+  photoLockedCard: {
+    backgroundColor: '#4b5563',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 16,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#6b7280',
+    borderStyle: 'dashed',
+  },
+  photoLockedIcon: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  photoLockedTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#9ca3af',
+    marginBottom: 4,
+  },
+  photoLockedText: {
+    fontSize: 12,
+    color: '#6b7280',
+    textAlign: 'center',
   },
   actionCard: {
     backgroundColor: '#3a3450',
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#5a4fcf',
+  },
+  actionCardLocked: {
+    backgroundColor: '#2a2438',
+    borderLeftColor: '#4b5563',
+    opacity: 0.6,
+  },
+  actionCardCompleted: {
+    backgroundColor: '#1a3a2a',
+    borderLeftColor: '#4ade80',
   },
   actionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   numberBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#dc2626',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
+  numberBadgeLocked: {
+    backgroundColor: '#4b5563',
+  },
+  numberBadgeCompleted: {
+    backgroundColor: '#4ade80',
+  },
   numberText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 16,
+  },
+  checkIcon: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  lockIcon: {
     fontSize: 16,
   },
   actionTextContainer: {
@@ -188,8 +302,24 @@ const styles = StyleSheet.create({
     color: '#fff',
     lineHeight: 20,
   },
+  actionTextLocked: {
+    color: '#6b7280',
+  },
+  actionTextCompleted: {
+    color: '#4ade80',
+  },
+  unlockHint: {
+    fontSize: 10,
+    color: '#f59e0b',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  spacer: {
+    height: 20,
+  },
   footer: {
     padding: 16,
+    paddingBottom: 80,
     borderTopWidth: 1,
     borderTopColor: '#4b5563',
     backgroundColor: '#3a3450',
