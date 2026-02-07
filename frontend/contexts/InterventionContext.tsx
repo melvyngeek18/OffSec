@@ -51,6 +51,7 @@ interface InterventionContextType {
   updateData: (key: string, value: any) => void;
   updateActions: (key: string, value: boolean) => void;
   updateOperations: (key: string, value: boolean) => void;
+  updateOperationCategories: (categories: { [key: string]: boolean }) => void;
   updateRisks: (key: string, value: boolean) => void;
   addPhoto: (photo: PhotoData) => void;
   removePhoto: (index: number) => void;
@@ -146,6 +147,13 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const updateOperationCategories = (categories: { [key: string]: boolean }) => {
+    setData(prev => ({
+      ...prev,
+      operationCategories: categories,
+    }));
+  };
+
   const updateRisks = (key: string, value: boolean) => {
     setData(prev => ({
       ...prev,
@@ -201,6 +209,7 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
         updateData,
         updateActions,
         updateOperations,
+        updateOperationCategories,
         updateRisks,
         addPhoto,
         removePhoto,
