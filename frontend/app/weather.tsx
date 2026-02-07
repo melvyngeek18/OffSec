@@ -24,7 +24,7 @@ interface WeatherData {
 
 export default function Weather() {
   const router = useRouter();
-  const { data } = useIntervention();
+  const { data, updateData, saveIntervention } = useIntervention();
   const [loading, setLoading] = useState(false);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +53,24 @@ export default function Weather() {
 
       const json = await response.json();
 
-      setWeatherData({
+      const weather = {
         temp: Math.round(json.main.temp),
         windSpeed: Math.round(json.wind.speed * 3.6), // Conversion m/s vers km/h
         description: json.weather[0].description,
         humidity: json.main.humidity,
         pressure: json.main.pressure,
         feelsLike: Math.round(json.main.feels_like),
+      };
+
+      setWeatherData(weather);
+
+      // Sauvegarder dans le context pour le PDF
+      updateData('weatherData', {
+        temperature: weather.temp,
+        windSpeed: weather.windSpeed,
+        description: weather.description,
       });
+      await saveIntervention();
     } catch (err) {
       console.error('Erreur météo:', err);
       setError('Impossible de récupérer les données météo');
