@@ -67,7 +67,7 @@ export const getLocationFromBrowser = (): Promise<LocationResult | null> => {
         // Gratuit, pas de clé API nécessaire
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18`,
+            `${NOMINATIM_API_URL}/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18`,
             {
               headers: {
                 'User-Agent': 'OffSecApp/1.0',
