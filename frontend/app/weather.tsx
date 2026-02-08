@@ -11,7 +11,8 @@ import {
 import { useRouter } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
 
-const API_KEY = 'b61d4b3f6e0c1a1dd1e247fec24b1176';
+const API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY || 'b61d4b3f6e0c1a1dd1e247fec24b1176';
+const WEATHER_API_URL = process.env.EXPO_PUBLIC_WEATHER_API_URL || 'https://api.openweathermap.org/data/2.5/weather';
 
 interface WeatherData {
   temp: number;
