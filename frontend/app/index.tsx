@@ -17,6 +17,8 @@ import * as Location from 'expo-location';
 import { useIntervention } from '../contexts/InterventionContext';
 import { getLocationMultiSource } from '../services/geolocation';
 
+const AVATAR_IMAGE = process.env.EXPO_PUBLIC_AVATAR_IMAGE || 'https://customer-assets.emergentagent.com/job_fc3d9cc8-1e32-46c7-b96d-ce4f244d60f5/artifacts/mkgxn585_avatar_officier_s%C3%A9curit%C3%A9-Photoroom.png';
+
 export default function Home() {
   const router = useRouter();
   const { data, updateData, saveIntervention } = useIntervention();
