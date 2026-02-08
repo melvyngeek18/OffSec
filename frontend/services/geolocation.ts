@@ -1,6 +1,9 @@
 // Service de géolocalisation avec fallback
 // Utilise ipapi.co qui est gratuit (1000 req/jour) sans clé API
 
+const IP_API_URL = process.env.EXPO_PUBLIC_IP_API_URL || 'https://ipapi.co/json/';
+const NOMINATIM_API_URL = process.env.EXPO_PUBLIC_NOMINATIM_API_URL || 'https://nominatim.openstreetmap.org';
+
 interface LocationResult {
   latitude: number;
   longitude: number;
@@ -18,7 +21,7 @@ export const getLocationFromIP = async (): Promise<LocationResult | null> => {
     console.log('🌐 Tentative de géolocalisation par IP...');
     
     // ipapi.co est gratuit (1000 req/jour) sans clé API
-    const response = await fetch('https://ipapi.co/json/');
+    const response = await fetch(IP_API_URL);
     
     if (!response.ok) {
       throw new Error('Erreur API IP');
