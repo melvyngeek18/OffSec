@@ -141,7 +141,7 @@ export default function Home() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: 'https://customer-assets.emergentagent.com/job_fc3d9cc8-1e32-46c7-b96d-ce4f244d60f5/artifacts/mkgxn585_avatar_officier_s%C3%A9curit%C3%A9-Photoroom.png' }}
+            source={{ uri: AVATAR_IMAGE }}
             style={styles.image}
             resizeMode="contain"
           />
