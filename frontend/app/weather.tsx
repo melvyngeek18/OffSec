@@ -41,7 +41,7 @@ export default function Weather() {
 
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${data.latitude}&lon=${data.longitude}&appid=${API_KEY}&units=metric&lang=fr`
+        `${WEATHER_API_URL}?lat=${data.latitude}&lon=${data.longitude}&appid=${API_KEY}&units=metric&lang=fr`
       );
 
       if (!response.ok) {
