@@ -10,6 +10,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@expo/metro-runtime": "^6.1.2",
     "@expo/vector-icons": "^14.0.0",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-picker/picker": "^2.7.5",
@@ -40,7 +41,8 @@
     "react-native-safe-area-context": "*",
     "react-native-screens": "*",
     "react-native-web": "*",
-    "react-native-webview": "*"
+    "react-native-webview": "*",
+    "react-native-worklets": "^0.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
