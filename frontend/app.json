@@ -7,6 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/images/splash-image.png",
       "resizeMode": "contain",
@@ -16,9 +17,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.offsec.app",
       "infoPlist": {
-        "NSCameraUsageDescription": "L'application utilise la caméra pour prendre des photos de l'intervention.",
-        "NSPhotoLibraryUsageDescription": "L'application accède à vos photos pour les ajouter aux rapports.",
-        "NSLocationWhenInUseUsageDescription": "L'application utilise votre position pour localiser l'intervention."
+        "NSCameraUsageDescription": "Prendre des photos de l'intervention",
+        "NSPhotoLibraryUsageDescription": "Ajouter des photos aux rapports",
+        "NSLocationWhenInUseUsageDescription": "Localiser l'intervention"
       }
     },
     "android": {
@@ -29,14 +30,14 @@
         "backgroundColor": "#262135"
       },
       "permissions": [
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_MEDIA_IMAGES",
-        "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
       ]
     },
     "web": {
@@ -49,47 +50,27 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "L'application utilise votre position pour localiser l'intervention.",
-          "locationWhenInUsePermission": "L'application utilise votre position pour localiser l'intervention."
+          "locationWhenInUsePermission": "Localiser l'intervention"
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "L'application accède à vos photos pour les ajouter aux rapports d'intervention.",
-          "cameraPermission": "L'application utilise la caméra pour prendre des photos de l'intervention."
+          "photosPermission": "Ajouter des photos aux rapports",
+          "cameraPermission": "Prendre des photos de l'intervention"
         }
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "L'application utilise la caméra pour prendre des photos de l'intervention."
+          "cameraPermission": "Prendre des photos de l'intervention"
         }
       ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "minSdkVersion": 24,
-            "buildToolsVersion": "34.0.0",
-            "kotlinVersion": "1.9.22",
-            "newArchEnabled": false
-          },
-          "ios": {
-            "newArchEnabled": false
-          }
-        }
-      ]
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "eas": {
-        "projectId": "offsec-app"
-      }
     }
   }
 }
