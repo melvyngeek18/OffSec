@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useIntervention } from '../contexts/InterventionContext';
@@ -105,6 +106,7 @@ export default function Summary() {
   };
 
   const getBase64FromUri = async (uri: string): Promise<string> => {
+    if (Platform.OS === 'web') return uri;
     try {
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
@@ -634,6 +636,17 @@ export default function Summary() {
       const html = await generatePdfHtml();
       console.log('HTML généré, longueur:', html.length);
       
+      if (Platform.OS === 'web') {
+        const page = window.open('', '_blank');
+        if (!page) throw new Error('Autoriser les fenêtres supplémentaires pour imprimer.');
+        page.document.open();
+        page.document.write(html);
+        page.document.close();
+        page.focus();
+        setTimeout(() => page.print(), 350);
+        return;
+      }
+
       // Utiliser printToFileAsync pour créer le PDF
       const { uri } = await Print.printToFileAsync({
         html,
