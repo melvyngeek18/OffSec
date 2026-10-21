@@ -33,13 +33,13 @@ jobs:
           node - <<'NODE'
           const fs = require('fs'), path = require('path');
           const root='dist', files=[];
-          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest)$/.test(e.name))files.push('/'+path.relative(root,full).replace(/\\/g,'/'));}};
+          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest)$/.test(e.name))files.push('/OffSec/'+path.relative(root,full).replace(/\\/g,'/'));}};
           crawl(root);
           const sw=path.join(root,'offsec-sw.js');
           if(!fs.existsSync(sw))throw new Error('Service worker manquant');
-          fs.appendFileSync(sw,'\nself.__OFFSEC_ASSETS='+JSON.stringify(files.filter(f=>f!=='/offsec-sw.js'))+';\n');
+          fs.appendFileSync(sw,'\nself.__OFFSEC_ASSETS='+JSON.stringify(files.filter(f=>f!=='/OffSec/offsec-sw.js'))+';\n');
           let s=fs.readFileSync(sw,'utf8');
-          s=s.replace("c.addAll(['/',OFFLINE,'/manifest.webmanifest'])","c.addAll(self.__OFFSEC_ASSETS || ['/',OFFLINE,'/manifest.webmanifest'])");
+          s=s.replace("c.addAll(['/OffSec/',OFFLINE,'/OffSec/manifest.webmanifest'])","c.addAll(self.__OFFSEC_ASSETS || ['/',OFFLINE,'/manifest.webmanifest'])");
           fs.writeFileSync(sw,s);
           console.log('OffSec assets precached:',files.length);
           NODE
