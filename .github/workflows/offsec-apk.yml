@@ -34,8 +34,8 @@ jobs:
         uses: android-actions/setup-android@v3
       - name: Install JS dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
-      - name: Validate Expo dependencies
-        run: npx expo install --check
+      - name: Align Expo dependencies for SDK 54
+        run: npx expo install --fix --npm
       - name: Generate Android native project
         run: npx expo prebuild --platform android --clean --no-install
       - name: Build debug APK
