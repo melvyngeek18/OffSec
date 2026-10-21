@@ -149,9 +149,9 @@ export default function BottomNavigation() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#1a1625',
+    backgroundColor: '#0B1523',
     borderTopWidth: 2,
-    borderTopColor: '#3a3450',
+    borderTopColor: '#172639',
     paddingVertical: 8,
     paddingHorizontal: 8,
     position: 'absolute',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     marginHorizontal: 4,
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     borderRadius: 8,
   },
   navButtonDisabled: {
