@@ -10,11 +10,11 @@ const ENDPOINT = process.env.EXPO_PUBLIC_OFFSEC_ANALYSIS_URL;
 
 /** Les images ne quittent le téléphone qu'après confirmation explicite. */
 export default function PhotoAnalysis() {
-  const { data } = useIntervention();
+  const { data, setAIReport } = useIntervention();
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(data.aiReport || null);
   const [busy, setBusy] = useState(false);
-  const [approved, setApproved] = useState(false);
+  const [approved, setApproved] = useState(Boolean(data.aiReport?.validated));
 
   async function choose(camera: boolean) {
     const permission = camera
@@ -30,6 +30,7 @@ export default function PhotoAnalysis() {
     }))].slice(0, 10));
     setAnalysis(null);
     setApproved(false);
+    setAIReport(null);
   }
 
   async function analyze() {
@@ -45,7 +46,7 @@ export default function PhotoAnalysis() {
   }
 
   async function runAnalysis() {
-    setBusy(true); setAnalysis(null); setApproved(false);
+    setBusy(true); setAnalysis(null); setApproved(false); setAIReport(null);
     try {
       const body = new FormData();
       photos.forEach((photo, i) => body.append('photos', { uri: photo.uri, name: photo.name || 'photo-' + i + '.jpg', type: 'image/jpeg' } as any));
@@ -62,6 +63,7 @@ export default function PhotoAnalysis() {
         throw new Error('Format de réponse IA invalide');
       }
       setAnalysis(result);
+      setAIReport({ ...result, validated: false, analyzedAt: new Date().toISOString(), photoCount: photos.length });
     } catch (error) {
       Alert.alert('Analyse impossible', String(error instanceof Error ? error.message : error));
     } finally { setBusy(false); }
@@ -81,7 +83,7 @@ export default function PhotoAnalysis() {
             <TouchableOpacity style={s.primary} onPress={() => void choose(true)}><Text style={s.white}>📷 Prendre une photo</Text></TouchableOpacity>
             <TouchableOpacity style={s.secondary} onPress={() => void choose(false)}><Text style={s.white}>＋ Galerie</Text></TouchableOpacity>
           </View>
-          <View style={s.gallery}>{photos.map((photo, i) => <View key={photo.uri + i} style={s.photoWrap}><Image source={{ uri: photo.uri }} style={s.photo}/><TouchableOpacity accessibilityLabel={'Supprimer photo ' + (i + 1)} style={s.delete} onPress={() => { setPhotos(prev => prev.filter((_, j) => j !== i)); setAnalysis(null); setApproved(false); }}><Text style={s.white}>×</Text></TouchableOpacity></View>)}</View>
+          <View style={s.gallery}>{photos.map((photo, i) => <View key={photo.uri + i} style={s.photoWrap}><Image source={{ uri: photo.uri }} style={s.photo}/><TouchableOpacity accessibilityLabel={'Supprimer photo ' + (i + 1)} style={s.delete} onPress={() => { setPhotos(prev => prev.filter((_, j) => j !== i)); setAnalysis(null); setApproved(false); setAIReport(null); }}><Text style={s.white}>×</Text></TouchableOpacity></View>)}</View>
         </View>
         <View style={s.card}>
           <Text style={s.heading}>02  Analyser les risques</Text>
@@ -94,7 +96,7 @@ export default function PhotoAnalysis() {
           <Text style={s.lead}>{analysis.summary}</Text>
           {analysis.findings.map((f, i) => <View key={i} style={s.finding}><Text style={s.risk}>Risque {i + 1} · {f.risk}</Text><Text style={s.body}>Indice visuel : {f.evidence || 'Non précisé'}</Text><Text style={s.body}>Mesure proposée : {f.measure}</Text><Text style={s.reference}>Référence : {f.reference}</Text><Text style={s.muted}>À vérifier sur le terrain{f.confidence ? ' · Fiabilité estimée : ' + f.confidence : ''}</Text></View>)}
           {(analysis.limitations || []).map((l, i) => <Text key={i} style={s.hint}>Limite : {l}</Text>)}
-          <TouchableOpacity style={s.secondary} onPress={() => setApproved(a => !a)}><Text style={s.white}>{approved ? '✓ Relecture terrain confirmée' : '□ Confirmer la relecture terrain'}</Text></TouchableOpacity>
+          <TouchableOpacity style={s.secondary} onPress={() => { const next = !approved; setApproved(next); setAIReport({ ...analysis, validated: next, analyzedAt: data.aiReport?.analyzedAt || new Date().toISOString(), photoCount: data.aiReport?.photoCount || photos.length }); }}><Text style={s.white}>{approved ? '✓ Relecture terrain confirmée' : '□ Confirmer la relecture terrain'}</Text></TouchableOpacity>
           <Text style={s.hint}>Cette confirmation ne modifie pas automatiquement les cases métier et ne transmet pas de consigne opérationnelle.</Text>
         </View>}
       </ScrollView>
