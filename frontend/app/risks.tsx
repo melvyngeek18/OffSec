@@ -125,10 +125,10 @@ export default function Risks() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262135',
+    backgroundColor: '#0B1523',
   },
   progressContainer: {
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     padding: 16,
     borderBottomWidth: 2,
     borderBottomColor: '#4b5563',
@@ -179,14 +179,14 @@ const styles = StyleSheet.create({
   categoryTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#f59e0b',
+    color: '#F1B953',
     marginBottom: 12,
     paddingBottom: 8,
     borderBottomWidth: 2,
-    borderBottomColor: '#f59e0b',
+    borderBottomColor: '#F1B953',
   },
   riskCard: {
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#4b5563',
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
   },
   nextButton: {
     backgroundColor: '#dc2626',
