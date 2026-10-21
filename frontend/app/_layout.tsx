@@ -3,10 +3,12 @@ import { InterventionProvider } from '../contexts/InterventionContext';
 import { Slot } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import BottomNavigation from '../components/BottomNavigation';
+import PwaSetup from '../components/PwaSetup';
 
 export default function Layout() {
   return (
     <InterventionProvider>
+      <PwaSetup />
       <View style={styles.container}>
         <Slot />
         <BottomNavigation />
@@ -18,6 +20,6 @@ export default function Layout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262135',
+    backgroundColor: '#0B1523',
   },
 });
