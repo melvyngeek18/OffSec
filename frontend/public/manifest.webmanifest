@@ -1,16 +1,16 @@
 {
-  "id": "/",
+  "id": "/OffSec/",
   "name": "OffSec — Officier Sécurité",
   "short_name": "OffSec",
   "description": "Assistance opérationnelle et suivi des risques hors réseau",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/OffSec/",
+  "scope": "/OffSec/",
   "display": "standalone",
   "background_color": "#0B1523",
   "theme_color": "#0B1523",
   "icons": [
     {
-      "src": "/offsec-icon.svg",
+      "src": "/OffSec/offsec-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
