@@ -38,13 +38,16 @@ jobs:
           echo "GitHub-hosted Android SDK detected"
       - name: Install JS dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
+      - name: Verify workflow revision
+        run: |
+          echo "OFFSEC_APK_WORKFLOW_REVISION=2026-10-22-no-expo-install-fix"
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Commit: $GITHUB_SHA"
       - name: Validate clean Expo CLI installation
         run: |
-          node -e "const fs=require('fs'); const p=require.resolve('@expo/cli/package.json'); const path=require('path'); const root=path.dirname(p); const f=path.join(root,'build/src/install/utils/autoAddConfigPlugins.js'); console.log('CLI:',p); if(!fs.existsSync(f)){console.log('Expo CLI internal file absent; do not run expo install --fix');}"
           node -e "console.log('Expo',require('expo/package.json').version,'CLI',require('@expo/cli/package.json').version)"
           npx expo config --type prebuild > /tmp/offsec-expo-config.txt
           npm ls expo expo-modules-autolinking react-native --all || true
-          npx expo-doctor || echo '::warning::Expo doctor a signale des problemes a verifier'
           node -e "const a=require('expo-modules-autolinking/package.json'); console.log('Expo autolinking version:', a.version)"
           npm ls expo-ai-kit --all || true
           npx expo-modules-autolinking verify -v || true
