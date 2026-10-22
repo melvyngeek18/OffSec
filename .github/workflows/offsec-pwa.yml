@@ -26,6 +26,12 @@ jobs:
         run: npm install --legacy-peer-deps --no-audit --no-fund
       - name: Align Expo SDK
         run: npx expo install --fix --npm
+      - name: Bundle local face detection model and WASM
+        run: |
+          mkdir -p public/mediapipe/wasm
+          cp node_modules/@mediapipe/tasks-vision/wasm/* public/mediapipe/wasm/
+          curl --fail --location --retry 3 --output public/mediapipe/face_detector.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite
+          test -s public/mediapipe/face_detector.tflite
       - name: Export installable web app
         run: npx expo export --platform web
       - name: Precache all static pages and assets
@@ -33,7 +39,7 @@ jobs:
           node - <<'NODE'
           const fs = require('fs'), path = require('path');
           const root='dist', files=[];
-          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest)$/.test(e.name))files.push('/OffSec/'+path.relative(root,full).replace(/\\/g,'/'));}};
+          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest|wasm|tflite)$/.test(e.name))files.push('/OffSec/'+path.relative(root,full).replace(/\\/g,'/'));}};
           crawl(root);
           const sw=path.join(root,'offsec-sw.js');
           if(!fs.existsSync(sw))throw new Error('Service worker manquant');
