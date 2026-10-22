@@ -51,8 +51,5 @@
     "@types/react": "*",
     "typescript": "*"
   },
-  "private": true,
-  "overrides": {
-    "expo-modules-autolinking": "3.0.27"
-  }
+  "private": true
 }
