@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useIntervention } from '../contexts/InterventionContext';
 
@@ -15,6 +15,14 @@ export default function PhotoAnalysis() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [analysis, setAnalysis] = useState<Analysis | null>(data.aiReport || null);
   const [busy, setBusy] = useState(false);
+  const [online, setOnline] = useState(true);
+  const [aiEnabled, setAiEnabled] = useState(true);
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof navigator === 'undefined') return;
+    const update = () => setOnline(navigator.onLine);
+    update(); window.addEventListener('online', update); window.addEventListener('offline', update);
+    return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); };
+  }, []);
   const [approved, setApproved] = useState(Boolean(data.aiReport?.validated));
 
   async function choose(camera: boolean) {
@@ -35,6 +43,7 @@ export default function PhotoAnalysis() {
   }
 
   async function analyze() {
+    if (!aiEnabled || !online) { Alert.alert('Mode autonome', 'La reconnaissance manuelle reste disponible. Analyse IA désactivée.'); return; }
     if (!photos.length) { Alert.alert('Photos nécessaires', 'Ajoutez une ou plusieurs vues de la scène.'); return; }
     if (!ENDPOINT || !ENDPOINT.startsWith('https://')) {
       Alert.alert('Analyse IA non configurée', 'Un service sécurisé HTTPS doit être configuré par l’administrateur. Aucune image n’a été transmise.');
@@ -75,6 +84,7 @@ export default function PhotoAnalysis() {
         <Text style={s.kicker}>OFFSEC  /  RECONNAISSANCE AUGMENTÉE</Text>
         <Text style={s.title}>Analyse photographique</Text>
         <Text style={s.lead}>Croisez plusieurs vues de la scène avec les contrôles de sécurité existants.</Text>
+        <TouchableOpacity style={s.secondary} onPress={() => setAiEnabled(v => !v)}><Text style={s.white}>{!online ? '● Hors réseau : analyse IA indisponible' : aiEnabled ? '● IA optionnelle activée — toucher pour désactiver' : '○ IA désactivée — toucher pour activer'}</Text></TouchableOpacity>
         <View style={s.notice}><Text style={s.noticeText}>⚠️ Aide à la décision uniquement. Une photo ne permet pas d'exclure un danger non visible. Validation terrain et information du COS indispensables.</Text></View>
         <View style={s.card}>
           <Text style={s.heading}>01  Constituer le dossier photo</Text>
@@ -89,7 +99,7 @@ export default function PhotoAnalysis() {
           <Text style={s.heading}>02  Analyser les risques</Text>
           <Text style={s.hint}>Confidentialité : ne photographiez pas de victimes ni de documents nominatifs. Vérifiez et recadrez les éléments sensibles avant tout envoi. Le retrait des données EXIF n'est pas garanti par cette seule option de capture.</Text>
           <Text style={s.muted}>Référentiel déclaré : Fiche Guide OFF SECOPS v5 et DO Soutien Opérationnel 2024, annexe 1. Le serveur doit disposer des documents validés et renvoyer des références vérifiables.</Text>
-          <TouchableOpacity style={[s.primary, (!photos.length || busy) && s.disabled]} disabled={!photos.length || busy} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
+          <TouchableOpacity style={[s.primary, (!photos.length || busy || !online || !aiEnabled) && s.disabled]} disabled={!photos.length || busy || !online || !aiEnabled} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
           {!ENDPOINT && <Text style={s.hint}>Module IA en attente de configuration serveur. Capture multi-photos utilisable dès maintenant.</Text>}
         </View>
         {analysis && <View style={s.card}>

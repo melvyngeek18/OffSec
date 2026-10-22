@@ -1,0 +1,65 @@
+name: OffSec Surface PWA
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/offsec-surface-pwa]
+    paths: ['frontend/**', '.github/workflows/offsec-pwa.yml']
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: offsec-surface-pwa
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --no-audit --no-fund
+      - name: Align Expo SDK
+        run: npx expo install --fix --npm
+      - name: Export installable web app
+        run: npx expo export --platform web
+      - name: Precache all static pages and assets
+        run: |
+          node - <<'NODE'
+          const fs = require('fs'), path = require('path');
+          const root='dist', files=[];
+          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest)$/.test(e.name))files.push('/OffSec/'+path.relative(root,full).replace(/\\/g,'/'));}};
+          crawl(root);
+          const sw=path.join(root,'offsec-sw.js');
+          if(!fs.existsSync(sw))throw new Error('Service worker manquant');
+          fs.appendFileSync(sw,'\nself.__OFFSEC_ASSETS='+JSON.stringify(files.filter(f=>f!=='/OffSec/offsec-sw.js'))+';\n');
+          let s=fs.readFileSync(sw,'utf8');
+          s=s.replace("c.addAll(['/OffSec/',OFFLINE,'/OffSec/manifest.webmanifest'])","c.addAll(self.__OFFSEC_ASSETS || ['/',OFFLINE,'/manifest.webmanifest'])");
+          fs.writeFileSync(sw,s);
+          console.log('OffSec assets precached:',files.length);
+          NODE
+      - name: Verify web export
+        run: test -f dist/index.html && test -f dist/manifest.webmanifest && test -f dist/offsec-sw.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OffSec-PWA-Surface
+          path: frontend/dist
+          retention-days: 14
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
