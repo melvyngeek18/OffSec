@@ -15,7 +15,7 @@ function resolved() {
   const root = path.dirname(bin);
   const executable = path.join(root, 'bin', 'expo-modules-autolinking.js');
   const candidates = [
-    () => cp.execFileSync(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['--no-install', 'expo-modules-autolinking', 'resolve', '--platform', 'android'], { encoding: 'utf8' })
+    () => cp.execFileSync(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['--no-install', 'expo-modules-autolinking', 'resolve', '--platform', 'android', '--json'], { encoding: 'utf8' })
   ];
   for (const command of candidates) {
     try { return JSON.parse(command()); } catch (error) {
