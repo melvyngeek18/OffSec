@@ -43,7 +43,12 @@ jobs:
           npx expo install --fix --npm
           npx expo config --type prebuild > /tmp/offsec-expo-config.txt
           npm ls expo expo-modules-autolinking react-native --depth=1 || true
+          node -e "const a=require('expo-modules-autolinking/package.json'); console.log('Expo autolinking version:', a.version)"
+          npm ls expo-ai-kit --all || true
           npx expo-modules-autolinking verify -v || true
+      - name: Confirm native module alignment
+        run: |
+          node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
       - name: Generate Android native project
         run: npx expo prebuild --platform android --clean --no-install
       - name: Build debug APK
