@@ -13,6 +13,26 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
   const [masks, setMasks] = useState<Mask[]>([]);
   const area = useRef<View>(null);
   const [saving, setSaving] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [detectorMessage, setDetectorMessage] = useState('Détection locale non effectuée');
+  const detectAndroid = async () => {
+    if (Platform.OS !== 'android') return;
+    setDetecting(true);
+    try {
+      const { detectFaces } = await import('expo-ai-kit');
+      const result = await detectFaces({uri:photo.uri});
+      const proposed = result.faces.map(face => ({
+        x: Math.max(0,Math.min(W-SIZE,(face.bounds.x+face.bounds.width/2)*W-SIZE/2)),
+        y: Math.max(0,Math.min(H-SIZE,(face.bounds.y+face.bounds.height/2)*H-SIZE/2))
+      }));
+      setMasks(previous=>[...previous,...proposed]);
+      onChange({...photo,safeUri:undefined,reviewed:false});
+      setDetectorMessage(proposed.length+' visage(s) détecté(s) localement — vérifier et compléter');
+    } catch(error) {
+      setDetectorMessage('Détection locale indisponible. Masquage manuel obligatoire.');
+      onChange({...photo,safeUri:undefined,reviewed:false});
+    } finally {setDetecting(false);}
+  };
   const addMask = (event: any) => {
     const { locationX, locationY } = event.nativeEvent;
     const x = Math.max(0, Math.min(W - SIZE, locationX - SIZE / 2));
@@ -56,6 +76,8 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
         {masks.map((mask, i) => <View key={i} style={[styles.mask, { left: mask.x, top: mask.y }]}/>)}
       </View>
     </Pressable>
+    {Platform.OS==='android' && <TouchableOpacity style={styles.secondary} disabled={detecting} onPress={()=>void detectAndroid()}><Text style={styles.button}>{detecting?'Détection locale...':'Détecter les visages sur Android'}</Text></TouchableOpacity>}
+    <Text style={styles.hint}>{detectorMessage}</Text>
     <View style={styles.row}>
       <TouchableOpacity style={styles.secondary} onPress={() => {setMasks([]);onChange({...photo,safeUri:undefined,reviewed:false});}}><Text style={styles.button}>Effacer masques</Text></TouchableOpacity>
       <TouchableOpacity style={styles.primary} disabled={saving} onPress={() => void prepare()}><Text style={styles.button}>{saving?'Traitement...':'Préparer l’image'}</Text></TouchableOpacity>
