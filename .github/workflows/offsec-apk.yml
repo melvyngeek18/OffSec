@@ -46,6 +46,32 @@ jobs:
           node -e "const a=require('expo-modules-autolinking/package.json'); console.log('Expo autolinking version:', a.version)"
           npm ls expo-ai-kit --all || true
           npx expo-modules-autolinking verify -v || true
+      - name: Diagnose Expo publication metadata before Gradle
+        run: |
+          set +e
+          npx expo-modules-autolinking resolve --platform android --json > /tmp/offsec-resolve.json 2> /tmp/offsec-resolve.err
+          code=$?
+          echo "Autolinking exit code: $code"
+          cat /tmp/offsec-resolve.err
+          node - <<'NODE'
+          const fs=require('fs');
+          const file='/tmp/offsec-resolve.json';
+          try {
+            const obj=JSON.parse(fs.readFileSync(file,'utf8'));
+            let count=0;
+            function walk(o,at='root') {
+              if(!o || typeof o!=='object')return;
+              if(o.publication && typeof o.publication==='object' && !o.publication.version) {
+                console.log('::error::Missing publication.version at '+at+': '+JSON.stringify(o.publication));
+                count++;
+              }
+              for(const [k,v] of Object.entries(o)) if(typeof v==='object')walk(v,at+'.'+k);
+            }
+            walk(obj); console.log('Publication entries missing version:',count);
+            if(count)process.exitCode=1;
+          }catch(e){console.log('Autolinking JSON unavailable:',String(e));}
+          NODE
+          if [ "$code" -ne 0 ]; then exit "$code"; fi
       - name: Confirm native module alignment
         run: |
           node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
