@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useIntervention } from '../contexts/InterventionContext';
+import PhotoPrivacyEditor, { SecurePhoto } from '../components/PhotoPrivacyEditor';
 
-type Photo = { uri: string; name: string };
+type Photo = SecurePhoto;
 type Finding = { risk: string; evidence: string; measure: string; reference: string; confidence?: string };
 type Analysis = { summary: string; findings: Finding[]; limitations?: string[] };
 const ENDPOINT = process.env.EXPO_PUBLIC_OFFSEC_ANALYSIS_URL;
@@ -45,6 +46,7 @@ export default function PhotoAnalysis() {
   async function analyze() {
     if (!aiEnabled || !online) { Alert.alert('Mode autonome', 'La reconnaissance manuelle reste disponible. Analyse IA désactivée.'); return; }
     if (!photos.length) { Alert.alert('Photos nécessaires', 'Ajoutez une ou plusieurs vues de la scène.'); return; }
+    if (photos.some(p => !p.reviewed || !p.safeUri)) { Alert.alert('Contrôle obligatoire', 'Préparez et vérifiez localement chaque photo avant toute transmission.'); return; }
     if (!ENDPOINT || !ENDPOINT.startsWith('https://')) {
       Alert.alert('Analyse IA non configurée', 'Un service sécurisé HTTPS doit être configuré par l’administrateur. Aucune image n’a été transmise.');
       return;
@@ -59,7 +61,17 @@ export default function PhotoAnalysis() {
     setBusy(true); setAnalysis(null); setApproved(false); setAIReport(null);
     try {
       const body = new FormData();
-      photos.forEach((photo, i) => body.append('photos', { uri: photo.uri, name: photo.name || 'photo-' + i + '.jpg', type: 'image/jpeg' } as any));
+      photos.forEach((photo, i) => {
+        if (!photo.safeUri || !photo.reviewed) throw new Error('Photo non vérifiée');
+        if (photo.safeUri.startsWith('data:image/jpeg;base64,')) {
+          const raw = atob(photo.safeUri.split(',')[1]);
+          const bytes = new Uint8Array(raw.length);
+          for (let j=0;j<raw.length;j++) bytes[j]=raw.charCodeAt(j);
+          body.append('photos', new Blob([bytes],{type:'image/jpeg'}), 'photo-' + i + '.jpg');
+        } else {
+          body.append('photos', {uri:photo.safeUri,name:'photo-'+i+'.jpg',type:'image/jpeg'} as any);
+        }
+      });
       body.append('context', JSON.stringify({
         checkedRisks: data.risks, checkedOperations: data.operations,
         doctrine: ['Fiche Guide OFF SECOPS v5', 'DO Soutien Opérationnel 2024 – Annexe 1']
@@ -96,10 +108,15 @@ export default function PhotoAnalysis() {
           <View style={s.gallery}>{photos.map((photo, i) => <View key={photo.uri + i} style={s.photoWrap}><Image source={{ uri: photo.uri }} style={s.photo}/><TouchableOpacity accessibilityLabel={'Supprimer photo ' + (i + 1)} style={s.delete} onPress={() => { setPhotos(prev => prev.filter((_, j) => j !== i)); setAnalysis(null); setApproved(false); setAIReport(null); }}><Text style={s.white}>×</Text></TouchableOpacity></View>)}</View>
         </View>
         <View style={s.card}>
-          <Text style={s.heading}>02  Analyser les risques</Text>
+          <Text style={s.heading}>02  Masquer les éléments identifiables</Text>
+          <Text style={s.hint}>Relecture manuelle obligatoire avant l'envoi. La détection locale automatique de visages n'est pas encore disponible ; masquez chaque visage vous-même. Le serveur effectue une seconde détection.</Text>
+          {photos.map((photo, i) => <PhotoPrivacyEditor key={photo.uri+i} photo={photo} onChange={next=>setPhotos(prev=>prev.map((p,j)=>j===i?next:p))}/>)}
+        </View>
+        <View style={s.card}>
+          <Text style={s.heading}>03  Analyser les risques</Text>
           <Text style={s.hint}>Confidentialité : ne photographiez pas de victimes ni de documents nominatifs. Vérifiez et recadrez les éléments sensibles avant tout envoi. Le retrait des données EXIF n'est pas garanti par cette seule option de capture.</Text>
           <Text style={s.muted}>Référentiel déclaré : Fiche Guide OFF SECOPS v5 et DO Soutien Opérationnel 2024, annexe 1. Le serveur doit disposer des documents validés et renvoyer des références vérifiables.</Text>
-          <TouchableOpacity style={[s.primary, (!photos.length || busy || !online || !aiEnabled) && s.disabled]} disabled={!photos.length || busy || !online || !aiEnabled} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
+          <TouchableOpacity style={[s.primary, (!photos.length || busy || !online || !aiEnabled || photos.some(p=>!p.reviewed||!p.safeUri)) && s.disabled]} disabled={!photos.length || busy || !online || !aiEnabled || photos.some(p=>!p.reviewed||!p.safeUri)} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
           {!ENDPOINT && <Text style={s.hint}>Module IA en attente de configuration serveur. Capture multi-photos utilisable dès maintenant.</Text>}
         </View>
         {analysis && <View style={s.card}>
