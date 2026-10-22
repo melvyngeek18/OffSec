@@ -32,6 +32,11 @@ jobs:
           node-version: '20'
       - name: Android SDK
         uses: android-actions/setup-android@v3
+      - name: Verify Android SDK licenses
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" || command -v sdkmanager
+          echo "Android SDK preparation completed"
       - name: Install JS dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
       - name: Validate Expo configuration
