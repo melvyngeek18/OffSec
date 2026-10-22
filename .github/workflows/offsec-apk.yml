@@ -38,12 +38,12 @@ jobs:
           echo "GitHub-hosted Android SDK detected"
       - name: Install JS dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
-      - name: Validate Expo configuration
+      - name: Align installed modules with Expo SDK 54
         run: |
-          node -v
-          npm -v
+          npx expo install --fix --npm
           npx expo config --type prebuild > /tmp/offsec-expo-config.txt
-          npx expo install --check || echo "::warning::Des dependances Expo doivent etre realignees dans package.json"
+          npm ls expo expo-modules-autolinking react-native --depth=1 || true
+          npx expo-modules-autolinking verify -v || true
       - name: Generate Android native project
         run: npx expo prebuild --platform android --clean --no-install
       - name: Build debug APK
