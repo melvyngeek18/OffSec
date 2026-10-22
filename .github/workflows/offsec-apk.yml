@@ -31,7 +31,10 @@ jobs:
         with:
           node-version: '20'
       - name: Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Verify Android SDK licenses
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
