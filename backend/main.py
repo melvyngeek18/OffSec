@@ -33,10 +33,10 @@ def references():
 
 @app.post("/analyze")
 async def analyze(
+    response: Response,
     photos: list[UploadFile] = File(...),
     context: str = Form("{}"),
-    authorization: str | None = Header(default=None),
-    response: Response = None
+    authorization: str | None = Header(default=None)
 ):
     if response is not None:
         response.headers['Cache-Control'] = 'no-store, private'
