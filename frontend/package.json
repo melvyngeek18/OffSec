@@ -43,7 +43,8 @@
     "react-native-web": "*",
     "react-native-webview": "*",
     "react-native-worklets": "^0.7.2",
-    "react-native-view-shot": "~4.0.3"
+    "react-native-view-shot": "~4.0.3",
+    "expo-ai-kit": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
