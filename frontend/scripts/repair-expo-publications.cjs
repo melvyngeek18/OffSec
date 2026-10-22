@@ -15,8 +15,7 @@ function resolved() {
   const root = path.dirname(bin);
   const executable = path.join(root, 'bin', 'expo-modules-autolinking.js');
   const candidates = [
-    () => cp.execFileSync(process.execPath, [executable, 'resolve', '--platform', 'android'], { encoding: 'utf8' }),
-    () => cp.execFileSync('npx', ['--no-install', 'expo-modules-autolinking', 'resolve', '--platform', 'android'], { encoding: 'utf8' })
+    () => cp.execFileSync(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['--no-install', 'expo-modules-autolinking', 'resolve', '--platform', 'android'], { encoding: 'utf8' })
   ];
   for (const command of candidates) {
     try { return JSON.parse(command()); } catch (error) {
@@ -34,6 +33,7 @@ function missing(data) {
 const before = resolved();
 const defects = missing(before);
 console.log('Expo modules:', (before.modules || []).length);
+(before.modules || []).forEach((m,i)=>console.log('Module index '+i+': '+m.packageName+' version '+(m.packageVersion||'unknown')));
 for (const {mod, project, i, j} of defects) {
   console.log('Missing publication.version:', JSON.stringify({
     location: 'modules[' + i + '].projects[' + j + '].publication',
