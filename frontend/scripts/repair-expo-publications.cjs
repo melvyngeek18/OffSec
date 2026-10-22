@@ -13,7 +13,7 @@ const cp = require('child_process');
 function resolved() {
   const bin = require.resolve('expo-modules-autolinking/package.json');
   const root = path.dirname(bin);
-  const executable = path.join(root, 'bin', 'expo-modules-autolinking');
+  const executable = path.join(root, 'bin', 'expo-modules-autolinking.js');
   const candidates = [
     () => cp.execFileSync(process.execPath, [executable, 'resolve', '--platform', 'android'], { encoding: 'utf8' }),
     () => cp.execFileSync('npx', ['--no-install', 'expo-modules-autolinking', 'resolve', '--platform', 'android'], { encoding: 'utf8' })
