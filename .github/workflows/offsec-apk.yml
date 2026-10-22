@@ -86,18 +86,26 @@ jobs:
           }catch(e){console.log('Autolinking JSON unavailable:',String(e));}
           NODE
           if [ "$code" -ne 0 ]; then exit "$code"; fi
-      - name: Build debug APK
-        run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon --stacktrace --console=plain
+      - name: Build standalone release APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace --console=plain
+      - name: Verify embedded JS bundle and release APK
+        run: |
+          test -f android/app/build/outputs/apk/release/app-release.apk
+          find android/app/build -type f \( -name 'index.android.bundle' -o -name '*.hbc' \) -print | head -20
+          ls -lh android/app/build/outputs/apk/release/app-release.apk
+      - name: Upload standalone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: OffSec-Android-standalone-APK
+          path: frontend/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 14
       - name: Report failure details
         if: failure()
         run: |
           echo "ETAPE EN ECHEC: ouvrir le premier bloc rouge du job."
           echo "Node $(node --version); npm $(npm --version)"
           if [ -f android/app/build/outputs/apk/debug/app-debug.apk ]; then echo "APK present malgre erreur"; fi
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: OffSec-Android-debug-APK
-          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 14
