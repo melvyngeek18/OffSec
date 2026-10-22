@@ -8,7 +8,7 @@ import base64
 import json
 import os
 from pathlib import Path
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile, Response
 from openai import AsyncOpenAI
 
 app = FastAPI(title="OffSec analyse", docs_url=None, redoc_url=None)
@@ -35,8 +35,12 @@ def references():
 async def analyze(
     photos: list[UploadFile] = File(...),
     context: str = Form("{}"),
-    authorization: str | None = Header(default=None)
+    authorization: str | None = Header(default=None),
+    response: Response = None
 ):
+    if response is not None:
+        response.headers['Cache-Control'] = 'no-store, private'
+        response.headers['Pragma'] = 'no-cache'
     token = os.environ.get("OFFSEC_BEARER_TOKEN")
     if not token or authorization != f"Bearer {token}":
         raise HTTPException(401, "Accès non autorisé")
