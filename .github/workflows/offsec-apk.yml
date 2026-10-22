@@ -56,6 +56,10 @@ jobs:
           node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
       - name: Generate Android native project
         run: npx expo prebuild --platform android --clean --no-install
+      - name: Repair and verify Expo publication metadata
+        run: |
+          node --check scripts/repair-expo-publications.cjs
+          node scripts/repair-expo-publications.cjs
       - name: Diagnose Expo publication metadata before Gradle
         run: |
           set +e
