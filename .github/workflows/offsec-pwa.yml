@@ -24,8 +24,10 @@ jobs:
           node-version: '20'
       - name: Install dependencies
         run: npm install --legacy-peer-deps --no-audit --no-fund
-      - name: Align Expo SDK
-        run: npx expo install --fix --npm
+      - name: Verify Expo setup
+        run: |
+          node -e "console.log('Expo:',require('expo/package.json').version,'React Native:',require('react-native/package.json').version)"
+          npx expo config --type public > /tmp/offsec-pwa-config.json
       - name: Bundle local face detection model and WASM
         run: |
           mkdir -p public/mediapipe/wasm
@@ -34,20 +36,19 @@ jobs:
           test -s public/mediapipe/face_detector.tflite
       - name: Export installable web app
         run: npx expo export --platform web
-      - name: Precache all static pages and assets
+      - name: Precache static PWA files
         run: |
           node - <<'NODE'
-          const fs = require('fs'), path = require('path');
-          const root='dist', files=[];
-          const crawl=(p)=>{for(const e of fs.readdirSync(p,{withFileTypes:true})){const full=path.join(p,e.name);if(e.isDirectory())crawl(full);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest|wasm|tflite)$/.test(e.name))files.push('/OffSec/'+path.relative(root,full).replace(/\\/g,'/'));}};
+          const fs=require('fs'),path=require('path');
+          const root='dist',files=[];
+          function crawl(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())crawl(p);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest|wasm|tflite)$/.test(entry.name))files.push('/OffSec/'+path.relative(root,p).split(path.sep).join('/'));}}
           crawl(root);
           const sw=path.join(root,'offsec-sw.js');
-          if(!fs.existsSync(sw))throw new Error('Service worker manquant');
-          fs.appendFileSync(sw,'\nself.__OFFSEC_ASSETS='+JSON.stringify(files.filter(f=>f!=='/OffSec/offsec-sw.js'))+';\n');
-          let s=fs.readFileSync(sw,'utf8');
-          s=s.replace("c.addAll(['/OffSec/',OFFLINE,'/OffSec/manifest.webmanifest'])","c.addAll(self.__OFFSEC_ASSETS || ['/',OFFLINE,'/manifest.webmanifest'])");
-          fs.writeFileSync(sw,s);
-          console.log('OffSec assets precached:',files.length);
+          if(!fs.existsSync(sw))throw Error('Missing service worker in dist');
+          const assets=files.filter(p=>p!=='/OffSec/offsec-sw.js');
+          const source=fs.readFileSync(sw,'utf8');
+          fs.writeFileSync(sw,'self.__OFFSEC_ASSETS='+JSON.stringify(assets)+';\n'+source);
+          console.log('PWA precache files:',assets.length);
           NODE
       - name: Verify web export
         run: test -f dist/index.html && test -f dist/manifest.webmanifest && test -f dist/offsec-sw.js
