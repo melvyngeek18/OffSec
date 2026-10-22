@@ -28,6 +28,7 @@ jobs:
         run: |
           node -e "console.log('Expo:',require('expo/package.json').version,'React Native:',require('react-native/package.json').version)"
           npx expo config --type public > /tmp/offsec-pwa-config.json
+          node -e "const ts=require('typescript'); console.log('TypeScript:',ts.version); if(typeof ts.sys?.getCurrentDirectory!=='function')throw Error('TypeScript sys.getCurrentDirectory missing')"
       - name: Bundle local face detection model and WASM
         run: |
           mkdir -p public/mediapipe/wasm
