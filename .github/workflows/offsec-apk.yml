@@ -30,16 +30,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Android SDK
-        uses: android-actions/setup-android@v4
-        with:
-          packages: platform-tools
-          log-accepted-android-sdk-licenses: false
-      - name: Verify Android SDK licenses
+      - name: Verify preinstalled Android SDK
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
-          test -x "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" || command -v sdkmanager
-          echo "Android SDK preparation completed"
+          test -d "$ANDROID_HOME/platform-tools"
+          test -d "$ANDROID_HOME/cmdline-tools"
+          echo "GitHub-hosted Android SDK detected"
       - name: Install JS dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
       - name: Validate Expo configuration
