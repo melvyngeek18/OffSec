@@ -42,10 +42,16 @@ jobs:
         run: |
           npx expo install --fix --npm
           npx expo config --type prebuild > /tmp/offsec-expo-config.txt
-          npm ls expo expo-modules-autolinking react-native --depth=1 || true
+          npm ls expo expo-modules-autolinking react-native --all || true
+          npx expo-doctor || echo '::warning::Expo doctor a signale des problemes a verifier'
           node -e "const a=require('expo-modules-autolinking/package.json'); console.log('Expo autolinking version:', a.version)"
           npm ls expo-ai-kit --all || true
           npx expo-modules-autolinking verify -v || true
+      - name: Confirm native module alignment
+        run: |
+          node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
+      - name: Generate Android native project
+        run: npx expo prebuild --platform android --clean --no-install
       - name: Diagnose Expo publication metadata before Gradle
         run: |
           set +e
@@ -72,11 +78,6 @@ jobs:
           }catch(e){console.log('Autolinking JSON unavailable:',String(e));}
           NODE
           if [ "$code" -ne 0 ]; then exit "$code"; fi
-      - name: Confirm native module alignment
-        run: |
-          node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
-      - name: Generate Android native project
-        run: npx expo prebuild --platform android --clean --no-install
       - name: Build debug APK
         run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon --stacktrace --console=plain
       - name: Report failure details
