@@ -7,6 +7,7 @@ type Photo = { uri: string; name: string };
 type Finding = { risk: string; evidence: string; measure: string; reference: string; confidence?: string };
 type Analysis = { summary: string; findings: Finding[]; limitations?: string[] };
 const ENDPOINT = process.env.EXPO_PUBLIC_OFFSEC_ANALYSIS_URL;
+// Les photographies restent en mémoire de la session : pas de galerie cloud automatique.
 
 /** Les images ne quittent le téléphone qu'après confirmation explicite. */
 export default function PhotoAnalysis() {
@@ -22,8 +23,8 @@ export default function PhotoAnalysis() {
       : await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) { Alert.alert('Autorisation requise', 'Autorisez la caméra ou la galerie.'); return; }
     const result = camera
-      ? await ImagePicker.launchCameraAsync({ quality: 0.65, allowsEditing: false })
-      : await ImagePicker.launchImageLibraryAsync({ quality: 0.65, allowsMultipleSelection: true, selectionLimit: 10 });
+      ? await ImagePicker.launchCameraAsync({ quality: 0.65, allowsEditing: false, exif: false, base64: false })
+      : await ImagePicker.launchImageLibraryAsync({ quality: 0.65, allowsMultipleSelection: true, selectionLimit: 10, exif: false, base64: false });
     if (result.canceled) return;
     setPhotos(previous => [...previous, ...result.assets.map((asset, i) => ({
       uri: asset.uri, name: asset.fileName || 'reconnaissance-' + Date.now() + '-' + i + '.jpg'
@@ -39,7 +40,7 @@ export default function PhotoAnalysis() {
       Alert.alert('Analyse IA non configurée', 'Un service sécurisé HTTPS doit être configuré par l’administrateur. Aucune image n’a été transmise.');
       return;
     }
-    Alert.alert('Confirmer la transmission', 'Les photos sélectionnées seront envoyées au service IA sécurisé pour analyse. Évitez les visages et données identifiantes.', [
+    Alert.alert('Transmission de données — confirmation', 'Vérifiez les photos : aucun visage, victime, plaque, adresse, donnée médicale ou autre élément identifiant. Seules les photos choisies sont transmises au serveur et au fournisseur IA, dont les règles de conservation doivent être validées par le DPO. Confirmer cet envoi ?', [
       { text: 'Annuler', style: 'cancel' },
       { text: 'Envoyer et analyser', onPress: () => void runAnalysis() }
     ]);
@@ -51,7 +52,6 @@ export default function PhotoAnalysis() {
       const body = new FormData();
       photos.forEach((photo, i) => body.append('photos', { uri: photo.uri, name: photo.name || 'photo-' + i + '.jpg', type: 'image/jpeg' } as any));
       body.append('context', JSON.stringify({
-        intervention: data.numeroIntervention,
         checkedRisks: data.risks, checkedOperations: data.operations,
         doctrine: ['Fiche Guide OFF SECOPS v5', 'DO Soutien Opérationnel 2024 – Annexe 1']
       }));
@@ -87,6 +87,7 @@ export default function PhotoAnalysis() {
         </View>
         <View style={s.card}>
           <Text style={s.heading}>02  Analyser les risques</Text>
+          <Text style={s.hint}>Confidentialité : ne photographiez pas de victimes ni de documents nominatifs. Vérifiez et recadrez les éléments sensibles avant tout envoi. Le retrait des données EXIF n'est pas garanti par cette seule option de capture.</Text>
           <Text style={s.muted}>Référentiel déclaré : Fiche Guide OFF SECOPS v5 et DO Soutien Opérationnel 2024, annexe 1. Le serveur doit disposer des documents validés et renvoyer des références vérifiables.</Text>
           <TouchableOpacity style={[s.primary, (!photos.length || busy) && s.disabled]} disabled={!photos.length || busy} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
           {!ENDPOINT && <Text style={s.hint}>Module IA en attente de configuration serveur. Capture multi-photos utilisable dès maintenant.</Text>}
