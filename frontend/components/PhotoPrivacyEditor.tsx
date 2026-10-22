@@ -13,6 +13,36 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
   const [masks, setMasks] = useState<Mask[]>([]);
   const area = useRef<View>(null);
   const [saving, setSaving] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [detectorMessage, setDetectorMessage] = useState('Détection locale non effectuée');
+  const detectWeb = async () => {
+    if (Platform.OS !== 'web') return;
+    setDetecting(true);
+    try {
+      const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
+      const base = '/OffSec';
+      const fileset = await FilesetResolver.forVisionTasks(base + '/mediapipe/wasm');
+      const detector = await FaceDetector.createFromOptions(fileset, {
+        baseOptions: { modelAssetPath: base + '/mediapipe/face_detector.tflite' },
+        runningMode: 'IMAGE', minDetectionConfidence: 0.45
+      });
+      const img = document.createElement('img'); img.src = photo.uri;
+      await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=reject;if(img.complete&&img.naturalWidth)resolve();});
+      const result = detector.detect(img);
+      const detected: Mask[] = (result.detections || []).map(d=>{
+        const b=d.boundingBox!; const x=b.originX*W/img.naturalWidth; const y=b.originY*H/img.naturalHeight;
+        const width=b.width*W/img.naturalWidth; const height=b.height*H/img.naturalHeight;
+        return {x:Math.max(0,Math.min(W-SIZE,x+width/2-SIZE/2)),y:Math.max(0,Math.min(H-SIZE,y+height/2-SIZE/2))};
+      });
+      detector.close();
+      setMasks(previous=>[...previous,...detected]);
+      onChange({...photo,safeUri:undefined,reviewed:false});
+      setDetectorMessage(detected.length+' visage(s) détecté(s) localement — vérification manuelle indispensable');
+    } catch(error) {
+      setDetectorMessage('Détection automatique indisponible. Masquez manuellement tous les éléments sensibles.');
+      onChange({...photo,safeUri:undefined,reviewed:false});
+    } finally {setDetecting(false);}
+  };
   const addMask = (event: any) => {
     const { locationX, locationY } = event.nativeEvent;
     const x = Math.max(0, Math.min(W - SIZE, locationX - SIZE / 2));
@@ -56,6 +86,8 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
         {masks.map((mask, i) => <View key={i} style={[styles.mask, { left: mask.x, top: mask.y }]}/>)}
       </View>
     </Pressable>
+    {Platform.OS==='web' && <TouchableOpacity style={styles.secondary} disabled={detecting} onPress={()=>void detectWeb()}><Text style={styles.button}>{detecting?'Détection locale...':'Détecter les visages sur cette Surface'}</Text></TouchableOpacity>}
+    <Text style={styles.hint}>{detectorMessage}</Text>
     <View style={styles.row}>
       <TouchableOpacity style={styles.secondary} onPress={() => {setMasks([]);onChange({...photo,safeUri:undefined,reviewed:false});}}><Text style={styles.button}>Effacer masques</Text></TouchableOpacity>
       <TouchableOpacity style={styles.primary} disabled={saving} onPress={() => void prepare()}><Text style={styles.button}>{saving?'Traitement...':'Préparer l’image'}</Text></TouchableOpacity>
