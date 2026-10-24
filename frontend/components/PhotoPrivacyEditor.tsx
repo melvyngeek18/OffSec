@@ -19,7 +19,30 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
     if (Platform.OS !== 'web') return;
     setDetecting(true);
     try {
-      const { FaceDetector, FilesetResolver } = await import('@mediapipe/tasks-vision');
+      // Load the prebuilt browser script as a local static file. Expo Metro must
+      // never parse vision_bundle.mjs (contains a nonliteral dynamic import).
+      const vision: any = await new Promise((resolve, reject) => {
+        const existing = (window as any).vision;
+        if (existing?.FaceDetector && existing?.FilesetResolver) return resolve(existing);
+        let script = document.querySelector('script[data-offsec-mediapipe]') as HTMLScriptElement | null;
+        const onLoad = () => {
+          const api = (window as any).vision;
+          if (api?.FaceDetector && api?.FilesetResolver) resolve(api);
+          else reject(new Error('Bibliothèque MediaPipe locale indisponible'));
+        };
+        if (script) {
+          if (script.dataset.loaded === 'true') onLoad();
+          else { script.addEventListener('load', onLoad, { once: true }); script.addEventListener('error', () => reject(new Error('Chargement MediaPipe impossible')), { once: true }); }
+        } else {
+          script = document.createElement('script');
+          script.dataset.offsecMediapipe = 'true';
+          script.src = '/OffSec/mediapipe/vision_bundle.js';
+          script.onload = () => { script!.dataset.loaded = 'true'; onLoad(); };
+          script.onerror = () => reject(new Error('Bibliothèque MediaPipe locale absente'));
+          document.head.appendChild(script);
+        }
+      });
+      const { FaceDetector, FilesetResolver } = vision;
       const base = '/OffSec';
       const fileset = await FilesetResolver.forVisionTasks(base + '/mediapipe/wasm');
       const detector = await FaceDetector.createFromOptions(fileset, {
