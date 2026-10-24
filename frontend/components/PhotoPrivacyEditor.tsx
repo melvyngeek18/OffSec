@@ -22,7 +22,7 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
       // Load the prebuilt browser script as a local static file. Expo Metro must
       // never parse vision_bundle.mjs (contains a nonliteral dynamic import).
       const vision: any = await new Promise((resolve, reject) => {
-        const existing = (window as any).vision;
+        const existing = (window as any).__offsecVision;
         if (existing?.FaceDetector && existing?.FilesetResolver) return resolve(existing);
         let script = document.querySelector('script[data-offsec-mediapipe]') as HTMLScriptElement | null;
         const onLoad = () => {
@@ -36,7 +36,8 @@ export default function PhotoPrivacyEditor({ photo, onChange }: {
         } else {
           script = document.createElement('script');
           script.dataset.offsecMediapipe = 'true';
-          script.src = '/OffSec/mediapipe/vision_bundle.js';
+          script.type = 'module';
+          script.src = '/OffSec/mediapipe/vision_loader.mjs';
           script.onload = () => { script!.dataset.loaded = 'true'; onLoad(); };
           script.onerror = () => reject(new Error('Bibliothèque MediaPipe locale absente'));
           document.head.appendChild(script);
