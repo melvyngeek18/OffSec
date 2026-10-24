@@ -8,6 +8,8 @@ interface PhotoData {
   description?: string;
 }
 
+export interface AIReport { summary: string; findings: { risk: string; evidence: string; measure: string; reference: string; confidence?: string }[]; limitations?: string[]; validated: boolean; analyzedAt: string; photoCount: number; }
+
 interface InterventionData {
   nom: string;
   matricule: string;
@@ -38,6 +40,7 @@ interface InterventionData {
     cosTact: string;
   };
   photos: PhotoData[];
+  aiReport: AIReport | null;
   weatherData: {
     temperature: number | null;
     windSpeed: number | null;
@@ -55,6 +58,7 @@ interface InterventionContextType {
   updateRisks: (key: string, value: boolean) => void;
   addPhoto: (photo: PhotoData) => void;
   removePhoto: (index: number) => void;
+  setAIReport: (report: AIReport | null) => void;
   saveIntervention: () => Promise<void>;
   loadIntervention: () => Promise<void>;
   resetIntervention: () => void;
@@ -102,6 +106,7 @@ const defaultData: InterventionData = {
     cosTact: '',
   },
   photos: [],
+  aiReport: null,
   weatherData: {
     temperature: null,
     windSpeed: null,
@@ -168,6 +173,8 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const setAIReport = (report: AIReport | null) => setData(prev => ({...prev, aiReport: report}));
+
   const removePhoto = (index: number) => {
     setData(prev => ({
       ...prev,
@@ -213,6 +220,7 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
         updateRisks,
         addPhoto,
         removePhoto,
+        setAIReport,
         saveIntervention,
         loadIntervention,
         resetIntervention,

@@ -16,8 +16,9 @@ const MENU_ITEMS = [
   { id: 4, title: '🛡️ Mesures Opérationnelles', route: '/operations', icon: '🛡️' },
   { id: 5, title: '⚠️ Zones à Risques', route: '/risks', icon: '⚠️' },
   { id: 6, title: '🚧 Périmètres de Sécurité', route: '/perimeter', icon: '🚧' },
-  { id: 7, title: '📝 SSO Scoring', route: '/sso', icon: '📝' },
-  { id: 8, title: '📑 Synthèse Finale', route: '/summary', icon: '📑' },
+  { id: 7, title: '📷 Analyse photo IA', route: '/photo-analysis', icon: '📷' },
+  { id: 8, title: '📝 SSO Scoring', route: '/sso', icon: '📝' },
+  { id: 9, title: '📑 Synthèse Finale', route: '/summary', icon: '📑' },
 ];
 
 export default function Menu() {
@@ -86,7 +87,7 @@ export default function Menu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262135',
+    backgroundColor: '#0B1523',
   },
   scrollContent: {
     padding: 20,
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 8,
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   infoCard: {
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     padding: 16,
     borderRadius: 12,
     marginBottom: 24,
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   menuItem: {
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   homeButton: {
-    backgroundColor: '#5a4fcf',
+    backgroundColor: '#34516B',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
