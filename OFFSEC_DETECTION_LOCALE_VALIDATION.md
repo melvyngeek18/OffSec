@@ -1,0 +1,6 @@
+# Détection automatique locale des visages — étape de validation
+Sur **Android** : module expo-ai-kit (ML Kit face-detection embarqué), compilation native nécessaire; Expo Go non compatible.
+Sur **Surface Windows** : MediaPipe Tasks Vision Web, modèle BlazeFace et WASM copiés lors du build PWA, puis mis en cache pour fonctionnement sans réseau après première installation.
+Dans chaque cas, l'utilisateur actionne « Détecter les visages », vérifie les masques proposés, ajoute des masques manuels et génère une nouvelle image JPEG. L'analyse IA bloque toute image non préparée.
+Les masques sont opaques plutôt qu'un flou réversible. Le détecteur automatique peut manquer des visages; la vérification humaine est toujours obligatoire.
+**Limites du prototype :** les masques automatiques sont actuellement des carrés centrés sur les détections (taille fixe) et peuvent être trop petits pour certains visages ; à adapter aux tailles des boîtes de détection et à valider sur images tests. Le rendu d'image Android et l'import web doivent être testés. Aucune preuve de conformité RGPD ni APK/PWA compilé disponible actuellement. L'authentification API IA est toujours à finir. Ne pas utiliser des photos d'interventions réelles sans validation DPO.

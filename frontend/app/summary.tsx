@@ -116,6 +116,8 @@ export default function Summary() {
     }
   };
 
+  const escapeHtml = (v: unknown) => String(v ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch] || ch));
+
   const generatePdfHtml = async (): Promise<string> => {
     const currentDate = new Date().toLocaleString('fr-FR');
     
@@ -210,6 +212,9 @@ export default function Summary() {
         operationsHtml += '</ul></div>';
       });
     }
+
+    const ai = data.aiReport;
+    const aiHtml = ai ? `<div class="section"><h3>Analyse photographique IA — ${ai.validated ? 'relue par l’officier' : 'non validée'}</h3><p>${escapeHtml(ai.summary)}</p><p>Photos analysées : ${ai.photoCount}</p><ul>${ai.findings.map(f => `<li><b>${escapeHtml(f.risk)}</b> — Indice : ${escapeHtml(f.evidence)} — Proposition : ${escapeHtml(f.measure)} — Référence déclarée : ${escapeHtml(f.reference)}</li>`).join('')}</ul><p>Limites : ${escapeHtml((ai.limitations || []).join('; '))}</p><p><b>Information indicative à vérifier ; ne remplace pas la reconnaissance terrain ni la décision du COS.</b></p></div>` : '';
 
     return `
     <!DOCTYPE html>
@@ -616,6 +621,7 @@ export default function Summary() {
         <p>Officier Sécurité - Rapport d'intervention n°${data.numeroIntervention || 'N/A'}</p>
         <p>${currentDate}</p>
       </div>
+      ${aiHtml}
     </body>
     </html>
     `;
@@ -751,6 +757,10 @@ export default function Summary() {
           </View>
         </View>
 
+        {data.aiReport && (
+          <View style={styles.infoCard}><Text style={styles.cardTitle}>✦ Analyse photo IA — {data.aiReport.validated ? 'relue' : 'à relire'}</Text><Text style={styles.infoValue}>{data.aiReport.summary}</Text><Text style={styles.helpText}>{data.aiReport.findings.length} risque(s) proposé(s), non confirmés automatiquement.</Text></View>
+        )}
+
         {remainingActions.length > 0 && (
           <View style={styles.remainingCard}>
             <Text style={styles.cardTitle}>⚠️ Actions Restantes ({remainingActions.length})</Text>
@@ -830,12 +840,12 @@ export default function Summary() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#262135' },
+  container: { flex: 1, backgroundColor: '#0B1523' },
   scrollView: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 200 },
   header: { alignItems: 'center', marginBottom: 24 },
   title: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
-  infoCard: { backgroundColor: '#3a3450', borderRadius: 12, padding: 16, marginBottom: 16 },
+  infoCard: { backgroundColor: '#172639', borderRadius: 12, padding: 16, marginBottom: 16 },
   cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#fff', marginBottom: 16 },
   infoRow: { flexDirection: 'row', marginBottom: 8 },
   infoLabel: { fontSize: 14, color: '#9ca3af', width: 120 },
@@ -848,7 +858,7 @@ const styles = StyleSheet.create({
   ssoLabel: { fontSize: 16, fontWeight: '600', color: '#1f2937' },
   ssoValue: { fontSize: 16, fontWeight: 'bold', color: '#1f2937' },
   ssoRecommendation: { fontSize: 14, fontWeight: 'bold', color: '#1f2937', textAlign: 'right', flex: 1 },
-  statsCard: { backgroundColor: '#5a4fcf', borderRadius: 12, padding: 16, marginBottom: 16 },
+  statsCard: { backgroundColor: '#34516B', borderRadius: 12, padding: 16, marginBottom: 16 },
   statRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
   statLabel: { fontSize: 14, color: '#fff' },
   statValue: { fontSize: 14, fontWeight: 'bold', color: '#fff' },
@@ -859,17 +869,17 @@ const styles = StyleSheet.create({
   actionNumber: { fontSize: 14, fontWeight: 'bold', color: '#dc2626' },
   actionText: { fontSize: 14, color: '#fff', flex: 1 },
   tapIcon: { fontSize: 16, marginLeft: 8 },
-  completedCard: { backgroundColor: '#3a3450', borderRadius: 12, padding: 16, marginBottom: 16 },
+  completedCard: { backgroundColor: '#172639', borderRadius: 12, padding: 16, marginBottom: 16 },
   completedItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 8, padding: 8, backgroundColor: 'rgba(74, 222, 128, 0.1)', borderRadius: 8 },
   checkmark: { fontSize: 20, marginRight: 8 },
   completedText: { fontSize: 14, color: '#9ca3af', flex: 1, textDecorationLine: 'line-through' },
-  messageCard: { backgroundColor: '#3a3450', borderRadius: 12, padding: 16, marginBottom: 16 },
+  messageCard: { backgroundColor: '#172639', borderRadius: 12, padding: 16, marginBottom: 16 },
   messageText: { fontSize: 16, color: '#4ade80', textAlign: 'center', lineHeight: 24 },
   spacer: { height: 100 },
-  footer: { padding: 16, paddingBottom: 80, borderTopWidth: 1, borderTopColor: '#4b5563', backgroundColor: '#3a3450' },
+  footer: { padding: 16, paddingBottom: 80, borderTopWidth: 1, borderTopColor: '#4b5563', backgroundColor: '#172639' },
   pdfButton: { backgroundColor: '#059669', padding: 16, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
   pdfButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
-  modifyButton: { backgroundColor: '#5a4fcf', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
+  modifyButton: { backgroundColor: '#34516B', padding: 14, borderRadius: 8, alignItems: 'center', marginBottom: 8 },
   modifyButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
   resetButton: { backgroundColor: '#dc2626', padding: 14, borderRadius: 8, alignItems: 'center' },
   resetButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },

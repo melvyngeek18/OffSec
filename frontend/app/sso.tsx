@@ -86,7 +86,8 @@ export default function SSO() {
     updateData('ssoLevel', level);
     updateData('ssoRecommendation', recommendation);
     
-    await saveIntervention();
+    // Le contexte sauvegarde automatiquement l'état actualisé après les modifications.
+    // Ne pas appeler saveIntervention ici : cela écrirait potentiellement l'ancien score.
     router.push('/summary');
   };
 
@@ -94,7 +95,7 @@ export default function SSO() {
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>🏋️‍♀️ Soutien Sanitaire Opérationnel</Text>
+          <Text style={styles.title}>🩺 Soutien Sanitaire Opérationnel</Text>
           <Text style={styles.subtitle}>Outil d'aide à la décision (Annexe 1)</Text>
         </View>
 
@@ -306,7 +307,7 @@ export default function SSO() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262135',
+    backgroundColor: '#0B1523',
   },
   scrollView: {
     flex: 1,
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   criteriaCard: {
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
@@ -359,8 +360,8 @@ const styles = StyleSheet.create({
     borderColor: '#4b5563',
   },
   switchOptionActive: {
-    backgroundColor: '#5a4fcf',
-    borderColor: '#7c3aed',
+    backgroundColor: '#34516B',
+    borderColor: '#69D7DB',
   },
   switchRow: {
     flexDirection: 'row',
@@ -472,7 +473,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
     borderTopWidth: 1,
     borderTopColor: '#4b5563',
-    backgroundColor: '#3a3450',
+    backgroundColor: '#172639',
   },
   saveButton: {
     backgroundColor: '#dc2626',
