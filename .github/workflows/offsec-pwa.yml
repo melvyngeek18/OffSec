@@ -33,8 +33,9 @@ jobs:
         run: |
           mkdir -p public/mediapipe/wasm
           cp node_modules/@mediapipe/tasks-vision/wasm/* public/mediapipe/wasm/
-          cp node_modules/@mediapipe/tasks-vision/vision_bundle.js public/mediapipe/vision_bundle.js
-          test -s public/mediapipe/vision_bundle.js
+          cp node_modules/@mediapipe/tasks-vision/vision_bundle.mjs public/mediapipe/vision_bundle.mjs
+          test -s public/mediapipe/vision_bundle.mjs
+          test -s public/mediapipe/vision_loader.mjs
           curl --fail --location --retry 3 --output public/mediapipe/face_detector.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite
           test -s public/mediapipe/face_detector.tflite
       - name: Export installable web app
@@ -53,7 +54,7 @@ jobs:
           node - <<'NODE'
           const fs=require('fs'),path=require('path');
           const root='dist',files=[];
-          function crawl(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())crawl(p);else if(/\.(html|js|css|woff2?|png|svg|webp|json|webmanifest|wasm|tflite)$/.test(entry.name))files.push('/OffSec/'+path.relative(root,p).split(path.sep).join('/'));}}
+          function crawl(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,entry.name);if(entry.isDirectory())crawl(p);else if(/\.(html|js|mjs|css|woff2?|png|svg|webp|json|webmanifest|wasm|tflite)$/.test(entry.name))files.push('/OffSec/'+path.relative(root,p).split(path.sep).join('/'));}}
           crawl(root);
           const sw=path.join(root,'offsec-sw.js');
           if(!fs.existsSync(sw))throw Error('Missing service worker in dist');
