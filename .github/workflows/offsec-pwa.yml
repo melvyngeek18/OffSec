@@ -36,7 +36,16 @@ jobs:
           curl --fail --location --retry 3 --output public/mediapipe/face_detector.tflite https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite
           test -s public/mediapipe/face_detector.tflite
       - name: Export installable web app
-        run: npx expo export --platform web
+        run: |
+          set -o pipefail
+          CI=1 EXPO_DEBUG=1 npx expo export --platform web 2>&1 | tee /tmp/offsec-web-export.log
+      - name: Report web export failure details
+        if: failure()
+        run: |
+          echo "::group::Web bundler error details"
+          grep -n -i -E 'error:|unable to resolve|module not found|cannot resolve|syntaxerror|bundling failed|exception|failed to resolve' /tmp/offsec-web-export.log | tail -60 || true
+          tail -100 /tmp/offsec-web-export.log || true
+          echo "::endgroup::"
       - name: Precache static PWA files
         run: |
           node - <<'NODE'
