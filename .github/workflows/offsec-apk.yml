@@ -54,6 +54,9 @@ jobs:
       - name: Confirm native module alignment
         run: |
           node -e "const pkg=require('./package.json'); if(pkg.dependencies['expo-ai-kit'])process.exit(1); console.log('Legacy native plugin absent')"
+      - name: Verify TypeScript runtime for embedded JS bundling
+        run: |
+          node -e "const ts=require('typescript'); console.log('TypeScript',ts.version); if(typeof ts.sys?.getCurrentDirectory!=='function')process.exit(1)"
       - name: Generate Android native project
         run: npx expo prebuild --platform android --clean --no-install
       - name: Repair and verify Expo publication metadata
