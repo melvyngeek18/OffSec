@@ -230,6 +230,9 @@ export default function Perimeter() {
           <Text style={styles.subtitle}>Distances règlementaires selon le risque</Text>
         </View>
 
+        <TouchableOpacity onPress={()=>router.push('/sitac')} style={{backgroundColor:'#087EFF',padding:14,borderRadius:10,alignItems:'center',marginBottom:14}}>
+          <Text style={{color:'#FFFFFF',fontWeight:'800'}}>🗺️ Créer ou modifier une SITAC photographique</Text>
+        </TouchableOpacity>
         <View style={styles.infoCard}>
           <Text style={styles.infoText}>
             Sélectionnez le type d'intervention pour obtenir les distances de périmètre adaptées.
