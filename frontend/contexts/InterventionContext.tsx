@@ -1,6 +1,22 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export type SitacPoint = { x: number; y: number };
+export type SitacAnnotation = {
+  id: string;
+  kind: 'zone' | 'arrow' | 'text' | 'symbol';
+  color: string;
+  points: SitacPoint[];
+  label?: string;
+};
+export type SitacVersion = {
+  id: string;
+  createdAt: string;
+  title: string;
+  backgroundUri: string;
+  annotations: SitacAnnotation[];
+  imageUri?: string;
+};
 interface PhotoData {
   uri: string;
   timestamp: string;
@@ -41,6 +57,7 @@ interface InterventionData {
   };
   photos: PhotoData[];
   aiReport: AIReport | null;
+  sitacs: SitacVersion[];
   weatherData: {
     temperature: number | null;
     windSpeed: number | null;
@@ -59,6 +76,8 @@ interface InterventionContextType {
   addPhoto: (photo: PhotoData) => void;
   removePhoto: (index: number) => void;
   setAIReport: (report: AIReport | null) => void;
+  addSitacVersion: (version: SitacVersion) => void;
+  deleteSitacVersion: (id: string) => void;
   saveIntervention: () => Promise<void>;
   loadIntervention: () => Promise<void>;
   resetIntervention: () => void;
@@ -107,6 +126,7 @@ const defaultData: InterventionData = {
   },
   photos: [],
   aiReport: null,
+  sitacs: [],
   weatherData: {
     temperature: null,
     windSpeed: null,
@@ -173,6 +193,12 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const addSitacVersion = (version: SitacVersion) => {
+    setData(prev => ({ ...prev, sitacs: [...(prev.sitacs || []), version] }));
+  };
+  const deleteSitacVersion = (id: string) => {
+    setData(prev => ({ ...prev, sitacs: (prev.sitacs || []).filter(s => s.id !== id) }));
+  };
   const setAIReport = (report: AIReport | null) => setData(prev => ({...prev, aiReport: report}));
 
   const removePhoto = (index: number) => {
@@ -221,6 +247,8 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
         addPhoto,
         removePhoto,
         setAIReport,
+        addSitacVersion,
+        deleteSitacVersion,
         saveIntervention,
         loadIntervention,
         resetIntervention,
