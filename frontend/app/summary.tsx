@@ -14,7 +14,7 @@ import { useIntervention } from '../contexts/InterventionContext';
 import PhotoCapture from '../components/PhotoCapture';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // Liste des risques
 const RISKS = [
@@ -106,6 +106,7 @@ export default function Summary() {
   };
 
   const getBase64FromUri = async (uri: string): Promise<string> => {
+    if (uri.startsWith('data:image/')) return uri;
     if (Platform.OS === 'web') return uri;
     try {
       const base64 = await FileSystem.readAsStringAsync(uri, {
@@ -213,6 +214,23 @@ export default function Summary() {
         });
         operationsHtml += '</ul></div>';
       });
+    }
+
+    // Every saved SITAC version is immutable and appears in the report.
+    let sitacHtml = '';
+    const sitacs = data.sitacs || [];
+    if (sitacs.length) {
+      sitacHtml = '<div class="section"><h3>SITAC photographique — historique de zonage</h3>';
+      for (const v of sitacs) {
+        const src = v.imageUri ? await getBase64FromUri(v.imageUri) : '';
+        sitacHtml += '<div style="page-break-inside:avoid;margin-bottom:18px">';
+        sitacHtml += '<h4>'+escapeHtml(v.title)+' — '+escapeHtml(new Date(v.createdAt).toLocaleString('fr-FR'))+'</h4>';
+        if(src) sitacHtml += '<img src="'+src+'" style="max-width:100%;height:auto;border:1px solid #9ca3af"/>';
+        else sitacHtml += '<p>Image SITAC indisponible sur cet appareil.</p>';
+        sitacHtml += '<p><strong>Légende :</strong> '+v.annotations.map(a=>'<span style="color:'+escapeHtml(a.color)+'">'+escapeHtml(a.kind)+' : '+escapeHtml(a.label||'Sans libellé')+'</span>').join(' ; ')+'</p>';
+        sitacHtml += '</div>';
+      }
+      sitacHtml += '<p>Historique déclaré : '+sitacs.length+' version(s). Le zonage est indicatif et doit être validé sur le terrain.</p></div>';
     }
 
     const ai = data.aiReport;
@@ -623,6 +641,7 @@ export default function Summary() {
         <p>Officier Sécurité - Rapport d'intervention n°${data.numeroIntervention || 'N/A'}</p>
         <p>${currentDate}</p>
       </div>
+      ${sitacHtml}
       ${aiHtml}
     </body>
     </html>
@@ -690,6 +709,7 @@ export default function Summary() {
         </View>
 
         <PhotoCapture type="end" title="Photos de fin d'action" />
+        <TouchableOpacity style={styles.modifyButton} onPress={() => router.push('/sitac')}><Text style={styles.modifyButtonText}>🗺️ SITAC photographiques — {data.sitacs?.length || 0} version(s)</Text></TouchableOpacity>
 
         <View style={styles.infoCard}>
           <Text style={styles.cardTitle}>👤 Informations Générales</Text>
