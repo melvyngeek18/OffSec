@@ -147,7 +147,7 @@ export const InterventionProvider = ({ children }: { children: ReactNode }) => {
   // Sauvegarde automatique quand les données changent
   useEffect(() => {
     const saveTimeout = setTimeout(() => {
-      if (data.nom || data.matricule || data.numeroIntervention) {
+      if (data.nom || data.matricule || data.numeroIntervention || (data.sitacs || []).length) {
         saveIntervention();
       }
     }, 1000);
