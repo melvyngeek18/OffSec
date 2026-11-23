@@ -17,6 +17,7 @@ const MENU_ITEMS = [
   { id: 5, title: '⚠️ Zones à Risques', route: '/risks', icon: '⚠️' },
   { id: 6, title: '🚧 Périmètres de Sécurité', route: '/perimeter', icon: '🚧' },
   { id: 7, title: '📷 Analyse photo IA', route: '/photo-analysis', icon: '📷' },
+  { id: 10, title: '🗺️ SITAC photographique', route: '/sitac', icon: '🗺️' },
   { id: 8, title: '📝 SSO Scoring', route: '/sso', icon: '📝' },
   { id: 9, title: '📑 Synthèse Finale', route: '/summary', icon: '📑' },
 ];
