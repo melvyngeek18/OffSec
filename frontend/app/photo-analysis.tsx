@@ -7,7 +7,9 @@ import PhotoPrivacyEditor, { SecurePhoto } from '../components/PhotoPrivacyEdito
 type Photo = SecurePhoto;
 type Finding = { risk: string; evidence: string; measure: string; reference: string; confidence?: string };
 type Analysis = { summary: string; findings: Finding[]; limitations?: string[] };
-const ENDPOINT = process.env.EXPO_PUBLIC_OFFSEC_ANALYSIS_URL;
+// Disabled by default: no external transfer until the SDIS approves and deploys a backend.
+const IA_ENABLED = process.env.EXPO_PUBLIC_OFFSEC_AI_ENABLED === 'true';
+const ENDPOINT = IA_ENABLED ? process.env.EXPO_PUBLIC_OFFSEC_ANALYSIS_URL : undefined;
 // Les photographies restent en mémoire de la session : pas de galerie cloud automatique.
 
 /** Les images ne quittent le téléphone qu'après confirmation explicite. */
@@ -17,6 +19,13 @@ export default function PhotoAnalysis() {
   const [analysis, setAnalysis] = useState<Analysis | null>(data.aiReport || null);
   const [busy, setBusy] = useState(false);
   const [approved, setApproved] = useState(Boolean(data.aiReport?.validated));
+
+  function addSitacPhoto(id: string) {
+    const version=(data.sitacs || []).find(v => v.id === id);
+    if(!version?.imageUri){Alert.alert('SITAC','Version non disponible sur cet appareil.');return;}
+    setPhotos(prev => [...prev,{uri:version.imageUri!,name:'sitac-'+id+'.jpg',reviewed:false}].slice(0,10));
+    setAnalysis(null);setApproved(false);setAIReport(null);
+  }
 
   async function choose(camera: boolean) {
     const permission = camera
@@ -95,6 +104,11 @@ export default function PhotoAnalysis() {
             <TouchableOpacity style={s.primary} onPress={() => void choose(true)}><Text style={s.white}>📷 Prendre une photo</Text></TouchableOpacity>
             <TouchableOpacity style={s.secondary} onPress={() => void choose(false)}><Text style={s.white}>＋ Galerie</Text></TouchableOpacity>
           </View>
+          {(data.sitacs || []).length > 0 && <View style={{marginVertical:12}}>
+            <Text style={s.heading}>Ajouter une SITAC annotée à la sélection</Text>
+            <Text style={s.hint}>Chaque SITAC sera soumise au masquage et au contrôle manuel, comme les photos terrain. Aucun envoi automatique.</Text>
+            {(data.sitacs || []).map(v=><TouchableOpacity key={v.id} style={s.secondary} onPress={()=>addSitacPhoto(v.id)}><Text style={s.white}>＋ SITAC : {v.title} ({new Date(v.createdAt).toLocaleDateString('fr-FR')})</Text></TouchableOpacity>)}
+          </View>}
           <View style={s.gallery}>{photos.map((photo, i) => <View key={photo.uri + i} style={s.photoWrap}><Image source={{ uri: photo.uri }} style={s.photo}/><TouchableOpacity accessibilityLabel={'Supprimer photo ' + (i + 1)} style={s.delete} onPress={() => { setPhotos(prev => prev.filter((_, j) => j !== i)); setAnalysis(null); setApproved(false); setAIReport(null); }}><Text style={s.white}>×</Text></TouchableOpacity></View>)}</View>
         </View>
         <View style={s.card}>
@@ -107,7 +121,7 @@ export default function PhotoAnalysis() {
           <Text style={s.hint}>Confidentialité : ne photographiez pas de victimes ni de documents nominatifs. Vérifiez et recadrez les éléments sensibles avant tout envoi. Le retrait des données EXIF n'est pas garanti par cette seule option de capture.</Text>
           <Text style={s.muted}>Référentiel déclaré : Fiche Guide OFF SECOPS v5 et DO Soutien Opérationnel 2024, annexe 1. Le serveur doit disposer des documents validés et renvoyer des références vérifiables.</Text>
           <TouchableOpacity style={[s.primary, (!photos.length || busy || photos.some(p=>!p.reviewed||!p.safeUri)) && s.disabled]} disabled={!photos.length || busy || photos.some(p=>!p.reviewed||!p.safeUri)} onPress={() => void analyze()}>{busy ? <ActivityIndicator color="#fff" /> : <Text style={s.white}>✦ Lancer l’analyse IA</Text>}</TouchableOpacity>
-          {!ENDPOINT && <Text style={s.hint}>Module IA en attente de configuration serveur. Capture multi-photos utilisable dès maintenant.</Text>}
+          {!IA_ENABLED && <Text style={s.hint}>Connexion IA préparée mais volontairement désactivée (choix 6-C). Aucun serveur ni clé API n’est configuré.</Text>}
         </View>
         {analysis && <View style={s.card}>
           <Text style={s.heading}>03  Synthèse proposée par l’IA</Text>
