@@ -1,6 +1,6 @@
 /* Cache static export on install and cache-first navigation after first online load.
    Never cache API responses, images of incidents or sensitive report data. */
-const CACHE='offsec-pwa-v2';
+const CACHE='offsec-pwa-v3';
 const OFFLINE='/OffSec/offline.html';
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(self.__OFFSEC_ASSETS || ['/OffSec/',OFFLINE,'/OffSec/manifest.webmanifest'])).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('offsec-pwa-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
