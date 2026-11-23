@@ -12,6 +12,7 @@ const modules = [
   { icon:'⚠️', title:'Zones à risques', path:'/risks', color:'#0B447C' },
   { icon:'🛡️', title:'Périmètres', path:'/perimeter', color:'#0B447C' },
   { icon:'🩺', title:'SSO', path:'/sso', color:'#0B447C' },
+  { icon:'🗺️', title:'SITAC photographique', path:'/sitac', color:'#0B447C' },
   { icon:'📸', title:'Analyse photo IA', path:'/photo-analysis', color:'#0B447C' },
   { icon:'📄', title:'Synthèse et rapport', path:'/summary', color:'#0B447C' },
 ];
